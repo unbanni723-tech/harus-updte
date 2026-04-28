@@ -1223,7 +1223,8 @@
             align-items: center;
             gap: 6px;
             cursor: pointer;
-            flex: 1; /* <--- GANTI JADI INI */
+            flex: 1;
+            /* <--- GANTI JADI INI */
             font-family: 'Orbitron', sans-serif;
             font-size: 0.6rem;
             font-weight: 700;
@@ -1624,6 +1625,17 @@
             box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
             transform: scale(1.02);
         }
+
+        /* --- KUNCI TOMBOL EKSEKUSI JIKA BOT KOSONG --- */
+        .btn-execute.locked {
+            background: rgba(255, 68, 68, 0.05) !important;
+            border: 1px dashed var(--danger) !important;
+            color: var(--danger) !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            pointer-events: none;
+            /* Mencegah tombol bisa diklik */
+        }
     </style>
 </head>
 
@@ -1798,6 +1810,29 @@
                         <small>CORE VERSION</small>
                         <b style="color: white; font-family: 'Orbitron'; font-size: 0.85rem;">V-2.0</b>
                     </div>
+                    <div class="info-card luxury-card"
+                        style="padding: 15px; margin-bottom: 25px; border-left: 4px solid var(--secondary) !important;">
+                        <div style="display:flex; justify-content: space-between; align-items:center; width: 100%;">
+                            <div style="display:flex; align-items:center; gap: 15px;">
+                                <div
+                                    style="background: rgba(112, 0, 255, 0.1); padding: 12px; border-radius: 12px; color: #b873f9; box-shadow: inset 0 0 10px rgba(112, 0, 255, 0.2);">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <small
+                                        style="color:gray; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase;">AVAILABLE
+                                        SENDER BOTS</small>
+                                    <div id="home-bot-count"
+                                        style="color:var(--danger); font-family:'Orbitron'; font-size: 1.1rem; font-weight:bold; letter-spacing: 1px; margin-top: 3px;">
+                                        0 READY</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -1910,7 +1945,7 @@
                     </div>
                     <input type="hidden" id="bug-select" value="">
                 </div>
-                <button class="btn-main" style="margin-top: 15px;" onclick="executeBug()">EXECUTE ATTACK</button>
+                <button id="btn-execute-attack" class="btn-main btn-execute locked" style="margin-top: 15px;" onclick="executeBug()">⚠️ NO SENDER AVAILABLE</button>
                 <div id="add-payload-box">
                     <hr style="border: 0; border-top: 1px solid rgba(0, 229, 255, 0.2); margin: 25px 0;">
                     <h4 style="font-size: 0.9rem;">ADD NEW PAYLOAD</h4>
@@ -1975,26 +2010,27 @@
             </svg>
             <span>History</span>
         </button>
-        <button class="taskbar-btn" onclick="switchTab('settings-section', this)" id="btn-settings" style="display: none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <button class="taskbar-btn" onclick="switchTab('settings-section', this)" id="btn-settings"
+            style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                </path>
+            </svg>
             <span>Settings</span>
         </button>
     </div>
 
     <div id="settings-section" class="section-box tab-content hidden">
-                <h4><span style="color: var(--primary);"></span>SYSTEM SETTINGS</h4>
-                <p style="font-size: 0.8rem; color: gray;">GLOBAL BOT MANAGER</p>
-                <div style="overflow-x: auto; margin-top: 15px;">
-                    <table style="width:100%; text-align:left; font-size: 0.85rem;">
-                        <thead style="color: var(--primary); font-family: 'Orbitron'; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <tr>
-                                <th>BOT & OWNER</th>
-                                <th>TYPE</th>
-                                <th>ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody id="global-bot-manage-list"></tbody>
-                    </table>
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h3 style="font-family: 'Orbitron'; font-size: 1.5rem; color: #fff; margin: 0; text-shadow: 0 0 15px var(--primary); letter-spacing: 3px;">SYSTEM <span style="color: var(--primary);">SETTINGS</span></h3>
+                    <p style="color: gray; font-size: 0.75rem; margin-top: 5px; letter-spacing: 2px;">GLOBAL BOT MANAGER</p>
+                </div>
+                
+                <div class="luxury-card" style="padding: 20px; flex-direction: column !important; align-items: stretch !important; gap: 12px !important; border-radius: 16px;">
+                    <div id="global-bot-manage-list" style="display: flex; flex-direction: column; gap: 12px;">
+                        </div>
                 </div>
             </div>
 
@@ -2667,25 +2703,94 @@
 
         // --- 4. Fungsi Load Dropdown di Menu Eksekusi ---
         // --- 4. Fungsi Load Dropdown di Menu Eksekusi ---
+        // --- FUNGSI LOAD DROPDOWN & KONTROL TOMBOL EKSEKUSI ---
         async function loadSendersDropdown() {
             let query = sb.from('bot_config').select('*').eq('status', 'online');
 
-            // Pemilik melihat SEMUA bot. Admin/Owner melihat Global + Miliknya Sendiri.
             if (currentUser.role !== 'pemilik') {
                 query = query.or(`tipe_sender.eq.global,owner.eq.${currentUser.username}`);
             }
 
             const { data } = await query;
             const select = document.getElementById('sender-select');
+            const btnExecute = document.getElementById('btn-execute-attack');
+            const homeBotCount = document.getElementById('home-bot-count');
 
-            // RESET ISI KOTAK AGAR TIDAK NUMPUK
             select.innerHTML = '<option value="">-- SELECT SENDER BOT --</option>';
 
             if (data && data.length > 0) {
+                // JIKA ADA BOT TERSEDIA: Masukkan ke dropdown & Nyalakan Tombol Eksekusi
                 data.forEach(bot => {
                     const label = bot.tipe_sender === 'global' ? '[GLOBAL]' : '[PRIVATE]';
                     select.innerHTML += `<option value="${bot.session_name}">${label} ${bot.session_name} (${bot.owner})</option>`;
                 });
+                
+                // Ubah tombol jadi warna normal dan bisa diklik
+                if (btnExecute) {
+                    btnExecute.classList.remove('locked');
+                    btnExecute.innerText = 'EXECUTE ATTACK';
+                }
+                // Update dashboard
+                if (homeBotCount) {
+                    homeBotCount.innerText = `${data.length} READY TO USE`;
+                    homeBotCount.style.color = 'var(--success)';
+                }
+            } else {
+                // JIKA BOT KOSONG: Matikan tombol eksekusi dan jadikan merah
+                if (btnExecute) {
+                    btnExecute.classList.add('locked');
+                    btnExecute.innerText = '⚠️ NO SENDER AVAILABLE';
+                }
+                // Update dashboard
+                if (homeBotCount) {
+                    homeBotCount.innerText = `0 READY`;
+                    homeBotCount.style.color = 'var(--danger)';
+                }
+            }
+        }
+
+        // --- FUNGSI GLOBAL BOT MANAGER (KHUSUS PEMILIK) - REDESIGNED ---
+        async function loadGlobalBotManager() {
+            if (!currentUser || currentUser.role !== 'pemilik') return;
+            
+            const { data } = await sb.from('bot_config').select('*').order('id', { ascending: false });
+            const container = document.getElementById('global-bot-manage-list');
+            
+            if (data && data.length > 0) {
+                container.innerHTML = data.map(bot => {
+                    const isGlobal = bot.tipe_sender === 'global';
+                    const toggleText = isGlobal ? 'MAKE PRIVATE' : 'MAKE GLOBAL';
+                    const typeColor = isGlobal ? 'var(--success)' : '#888';
+                    const btnColor = isGlobal ? 'var(--danger)' : 'var(--primary)';
+                    const btnBorder = isGlobal ? 'rgba(255,68,68,0.3)' : 'rgba(0,229,255,0.3)';
+                    const btnBg = isGlobal ? 'rgba(255,68,68,0.05)' : 'rgba(0,229,255,0.05)';
+                    
+                    // Ganti Ikon berdasarkan tipe bot
+                    const iconSvg = isGlobal 
+                        ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`
+                        : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
+                    
+                    return `
+                    <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;">
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <div style="color: ${typeColor}; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; display:flex;">
+                                ${iconSvg}
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <div style="font-family: 'Orbitron'; font-size: 1rem; color: white; font-weight: bold; letter-spacing: 1px;">${bot.session_name}</div>
+                                <div style="font-size: 0.65rem; color: gray; text-transform: uppercase; letter-spacing: 1px;">
+                                    OWNER: <span style="color:#fff;">${bot.owner}</span> &nbsp;|&nbsp; TYPE: <span style="color:${typeColor}; font-weight:bold;">${bot.tipe_sender}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="toggleBotType(${bot.id}, '${bot.tipe_sender}')" style="padding: 8px 12px; font-size: 0.7rem; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border-radius: 8px; background: ${btnBg}; color: ${btnColor}; border: 1px solid ${btnBorder}; transition: 0.3s;">
+                            ${toggleText}
+                        </button>
+                    </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = `<div style="text-align:center; padding: 25px; color: gray; font-size: 0.8rem; font-family: 'Orbitron'; border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px;">NO SENDER BOTS REGISTERED IN DATABASE.</div>`;
             }
         }
 
@@ -2888,10 +2993,10 @@
         // --- FUNGSI GLOBAL BOT MANAGER (KHUSUS PEMILIK) ---
         async function loadGlobalBotManager() {
             if (!currentUser || currentUser.role !== 'pemilik') return;
-            
+
             const { data } = await sb.from('bot_config').select('*').order('id', { ascending: false });
             const tbody = document.getElementById('global-bot-manage-list');
-            
+
             if (data) {
                 tbody.innerHTML = data.map(bot => {
                     const isGlobal = bot.tipe_sender === 'global';
@@ -2899,7 +3004,7 @@
                     const typeColor = isGlobal ? 'var(--success)' : '#888';
                     const btnColor = isGlobal ? 'var(--danger)' : 'var(--primary)';
                     const btnBg = isGlobal ? 'rgba(255,68,68,0.1)' : 'rgba(0,229,255,0.1)';
-                    
+
                     return `
                     <tr>
                         <td><b>${bot.session_name}</b> <br> <small style="color:gray;">Owner: ${bot.owner}</small></td>
@@ -2917,10 +3022,10 @@
 
         function toggleBotType(id, currentType) {
             const newType = currentType === 'global' ? 'private' : 'global';
-            const msg = newType === 'global' 
-                ? "Jadikan bot ini GLOBAL? Semua user akan bisa memakai bot ini untuk eksekusi." 
+            const msg = newType === 'global'
+                ? "Jadikan bot ini GLOBAL? Semua user akan bisa memakai bot ini untuk eksekusi."
                 : "Jadikan bot ini PRIVATE? Hanya owner aslinya yang bisa memakainya.";
-            
+
             showPopup("KONFIRMASI AKSES", msg, true, async () => {
                 const { error } = await sb.from('bot_config').update({ tipe_sender: newType }).eq('id', id);
                 if (!error) {
