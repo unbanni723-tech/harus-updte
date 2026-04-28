@@ -1800,7 +1800,7 @@
                 </div>
 
                 <div class="store-banner" style="padding: 20px 15px; border-radius: 16px; margin-bottom: 20px;">
-                    <h3 style="font-size: 1.6rem;">LEXXY <span>STORE</span></h3>
+                    <h3 style="font-size: 1.6rem;">ALEX <span>YUSOMO</span></h3>
                     <p style="font-size: 0.65rem; margin-top: 5px;">ELITE WHATSAPP BUG PLATFORM</p>
                 </div>
 
@@ -2875,13 +2875,6 @@
             });
         }
 
-        function delUser(id) {
-            showPopup("WARNING", "Terminate access for this user?", true, async () => {
-                await sb.from('users').delete().eq('id', id);
-                loadUsers();
-            });
-        }
-
         async function addBugType() {
             const name = document.getElementById('new-bug-name').value;
             if (!name) return showPopup("WARNING", "Enter payload name!");
@@ -2996,55 +2989,6 @@
             toastTimeout = setTimeout(() => {
                 toast.classList.remove('show');
             }, 2500);
-        }
-
-        // --- FUNGSI GLOBAL BOT MANAGER (KHUSUS PEMILIK) ---
-        async function loadGlobalBotManager() {
-            if (!currentUser || currentUser.role !== 'pemilik') return;
-
-            const { data } = await sb.from('bot_config').select('*').order('id', { ascending: false });
-            const tbody = document.getElementById('global-bot-manage-list');
-
-            if (data) {
-                tbody.innerHTML = data.map(bot => {
-                    const isGlobal = bot.tipe_sender === 'global';
-                    const toggleText = isGlobal ? 'MAKE PRIVATE' : 'MAKE GLOBAL';
-                    const typeColor = isGlobal ? 'var(--success)' : '#888';
-                    const btnColor = isGlobal ? 'var(--danger)' : 'var(--primary)';
-                    const btnBg = isGlobal ? 'rgba(255,68,68,0.1)' : 'rgba(0,229,255,0.1)';
-
-                    return `
-                    <tr>
-                        <td><b>${bot.session_name}</b> <br> <small style="color:gray;">Owner: ${bot.owner}</small></td>
-                        <td><b style="color: ${typeColor};">${bot.tipe_sender.toUpperCase()}</b></td>
-                        <td>
-                            <button onclick="toggleBotType(${bot.id}, '${bot.tipe_sender}')" style="padding: 6px 10px; font-size: 0.7rem; font-family: 'Orbitron'; cursor: pointer; border-radius: 6px; background: ${btnBg}; color: ${btnColor}; border: 1px solid ${btnColor};">
-                                ${toggleText}
-                            </button>
-                        </td>
-                    </tr>
-                    `;
-                }).join('');
-            }
-        }
-
-        function toggleBotType(id, currentType) {
-            const newType = currentType === 'global' ? 'private' : 'global';
-            const msg = newType === 'global'
-                ? "Jadikan bot ini GLOBAL? Semua user akan bisa memakai bot ini untuk eksekusi."
-                : "Jadikan bot ini PRIVATE? Hanya owner aslinya yang bisa memakainya.";
-
-            showPopup("KONFIRMASI AKSES", msg, true, async () => {
-                const { error } = await sb.from('bot_config').update({ tipe_sender: newType }).eq('id', id);
-                if (!error) {
-                    showToast(`Bot berhasil diubah menjadi ${newType.toUpperCase()}`);
-                    loadManageSenders();
-                    loadSendersDropdown();
-                    loadGlobalBotManager();
-                } else {
-                    showPopup("ERROR", error.message);
-                }
-            });
         }
     </script>
 
