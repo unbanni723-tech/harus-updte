@@ -1583,6 +1583,44 @@
             background: var(--primary);
             border-radius: 4px;
         }
+
+        /* --- CYBERPUNK TOGGLE BUTTONS --- */
+        .cyber-select-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .cyber-select-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .cyber-select-btn:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            color: #fff;
+            background: rgba(0, 229, 255, 0.05);
+        }
+        .cyber-select-btn.active {
+            background: rgba(0, 229, 255, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+            transform: scale(1.02);
+        }
     </style>
 </head>
 
@@ -1741,8 +1779,12 @@
                 <input type="password" id="new-pass" placeholder="New Password">
                 <input type="date" id="new-exp">
                 <select id="new-role">
-                    <option value="admin">Admin</option>
-                    <option value="owner">Owner</option>
+                    <div style="margin-top: 15px; margin-bottom: 15px;">
+                    <small style="color: gray; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px;">ASSIGN ROLE:</small>
+                    <div class="cyber-select-container" id="role-btn-container">
+                        </div>
+                    <input type="hidden" id="new-role" value="admin">
+                </div>
                 </select>
                 <button class="btn-main" onclick="addUser()">REGISTER USER</button>
                 <div id="user-list-container" class="user-list-container"></div>
@@ -1753,8 +1795,20 @@
                 <input type="text" id="session-name" placeholder="Session Name (e.g., MainBot)">
                 <input type="number" id="bot-num" placeholder="WhatsApp Number (Starts with 628...)">
                 <select id="tipe-sender">
-                    <option value="private">Private</option>
-                    <option value="global">Global (Public)</option>
+                    <div id="tipe-sender-container" style="margin-top: 15px; margin-bottom: 15px;">
+                    <small style="color: gray; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px;">SENDER TYPE:</small>
+                    <div class="cyber-select-container">
+                        <div class="cyber-select-btn active" onclick="setCyberSelect('tipe-sender', 'private', this)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            PRIVATE
+                        </div>
+                        <div class="cyber-select-btn" onclick="setCyberSelect('tipe-sender', 'global', this)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            GLOBAL
+                        </div>
+                    </div>
+                    <input type="hidden" id="tipe-sender" value="private">
+                </div>
                 </select>
                 <button class="btn-main" onclick="addAndReqPairing()">REQUEST PAIRING CODE</button>
                 <div class="code-box" id="code-display" onclick="copyPairingCode(this)" style="cursor: pointer;"
@@ -1778,9 +1832,6 @@
 
             <div id="eksekusi-section" class="section-box tab-content hidden">
                 <h4><span style="color: var(--primary);"></span>BUG EXECUTION</h4>
-                <select id="sender-select">
-                    <option value="">-- SELECT SENDER BOT --</option>
-                </select>
                 <input type="number" id="target" placeholder="Target Number (Starts with 628...)">
                 <div style="margin-top: 15px;">
                     <small style="color: gray; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px;">SELECT PAYLOAD MODULE:</small>
@@ -2300,6 +2351,15 @@
                         <p style="color: gray; font-size: 0.85rem; margin: 0;">No users registered yet.</p>
                     </div>`;
             }
+        }
+
+        // --- FUNGSI KLIK TOGGLE CYBER SELECT ---
+        function setCyberSelect(inputId, value, element) {
+            document.getElementById(inputId).value = value;
+            const parent = element.parentElement;
+            parent.querySelectorAll('.cyber-select-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            if (navigator.vibrate) navigator.vibrate(20); // Efek Getar
         }
 
         // --- FUNGSI PANEL GESER (BOTTOM SHEET) ---
