@@ -1960,6 +1960,14 @@
 
             <div id="eksekusi-section" class="section-box tab-content hidden">
                 <h4><span style="color: var(--primary);"></span>BUG EXECUTION</h4>
+
+                <small style="color: gray; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px;">SELECT
+                    SENDER:</small>
+                <select id="sender-select"
+                    style="margin-bottom: 15px; border-color: var(--primary); box-shadow: 0 0 10px rgba(0,229,255,0.1);">
+                    <option value="">-- SELECT SENDER BOT --</option>
+                </select>
+
                 <input type="number" id="target" placeholder="Target Number (Starts with 628...)">
                 <div style="margin-top: 15px;">
                     <small style="color: gray; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px;">SELECT
@@ -2935,7 +2943,7 @@
 
             if (data && data.length > 0) {
                 let filteredBots = data;
-                
+
                 // Filter: Pemilik lihat semua. Admin/Owner HANYA lihat bot GLOBAL + PRIVATE miliknya sendiri
                 if (currentUser && currentUser.role !== 'pemilik') {
                     filteredBots = data.filter(b => String(b.tipe_sender).toLowerCase() === 'global' || String(b.owner) === String(currentUser.username));
@@ -2950,7 +2958,7 @@
                         const statusLabel = bot.status === 'online' ? '🟢' : '🔴';
                         select.innerHTML += `<option value="${bot.session_name}">${statusLabel} ${label} ${bot.session_name}</option>`;
                     });
-                    
+
                     // BUKA KUNCI TOMBOL (WARNA BIRU) KARENA BOT TERSEDIA
                     if (btnExecute) {
                         btnExecute.classList.remove('locked');
