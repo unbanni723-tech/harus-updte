@@ -1,0 +1,2604 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WEB BUG WA | LEXXY CODE</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00e5ff;
+            --secondary: #7000ff;
+            --bg: #0a0b10;
+            --card-bg: rgba(30, 32, 45, 0.7);
+            --text: #e0e0e0;
+            --danger: #ff4444;
+            --success: #00ff88;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            /* --- TAMBAHAN KHUSUS APK --- */
+            -webkit-tap-highlight-color: transparent;
+            /* Hilangkan kotak biru/abu saat tombol ditekan */
+            -webkit-touch-callout: none;
+            /* Cegah menu pop-up saat layar ditahan lama */
+            user-select: none;
+            /* Cegah teks di layar bisa di-blok/copy */
+            overscroll-behavior-y: none;
+            /* Cegah efek mantul/refresh saat di-scroll mentok ke atas */
+
+            /* (Kode margin, padding, background, dll yang lama biarkan tetap ada di bawah sini) */
+            margin: 0;
+            padding: 40px 20px;
+            /* Memberikan ruang di atas dan bawah */
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--text);
+
+            /* Background */
+            background:
+                radial-gradient(circle at left, rgba(255, 0, 255, 0.15), transparent 40%),
+                radial-gradient(circle at right, rgba(0, 255, 255, 0.15), transparent 40%),
+                #05070f;
+
+            /* Flexbox untuk menengahkan secara horizontal tapi membiarkan vertikal melar */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            /* Pakai min-height agar bisa discroll jika konten panjang */
+            overflow-x: hidden;
+            overflow-y: auto;
+            /* Mengaktifkan scroll bar */
+        }
+
+        /* --- BRANDING LOGO & ANIMATION --- */
+        .brand-container {
+            position: relative;
+            top: 30px;
+            left: 40px;
+            z-index: 100;
+            text-align: left;
+        }
+
+        /* GRID BACKGROUND (INI YANG DIANIMASI) */
+        body::before {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 100%;
+
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
+
+            background-size: 40px 40px;
+
+            animation: gridMove 10s linear infinite;
+            /* PINDAH KE SINI */
+            opacity: 0.6;
+            z-index: 0;
+        }
+
+        /* GLOW */
+        body::after {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0.03) 1px,
+                    transparent 1px);
+            background-size: 100% 3px;
+            pointer-events: none;
+        }
+
+        /* --- TOAST NOTIFICATION PREMIUM --- */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            /* Bersembunyi di atas layar */
+            background: rgba(10, 12, 20, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--primary);
+            box-shadow: 0 5px 20px rgba(0, 229, 255, 0.4);
+            padding: 12px 24px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 99999;
+            /* Pastikan selalu paling depan */
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            /* Efek mantul (bouncy) mewah */
+        }
+
+        .toast-container.show {
+            transform: translateX(-50%) translateY(0);
+            /* Meluncur turun */
+            opacity: 1;
+        }
+
+        .toast-icon {
+            color: var(--primary);
+            display: flex;
+            animation: pulse-toast 2s infinite;
+        }
+
+        .toast-text {
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        @keyframes pulse-toast {
+            0% {
+                filter: drop-shadow(0 0 2px var(--primary));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 8px var(--primary));
+            }
+
+            100% {
+                filter: drop-shadow(0 0 2px var(--primary));
+            }
+        }
+
+        /* ANIMASI GRID */
+        @keyframes gridMove {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 40px 40px;
+            }
+        }
+
+        /* --- REFINED LUXURY LOGIN CARD --- */
+        .login-wrapper {
+            width: 100%;
+            max-width: 380px;
+            /* Sedikit lebih lebar agar lega */
+        }
+
+        .login-card {
+            width: 100%;
+            padding: 35px 30px;
+            border-radius: 24px;
+            background: rgba(10, 12, 20, 0.8);
+            /* Lebih gelap & pekat */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+
+            /* Border super tipis dengan gradasi halus */
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(0, 229, 255, 0.05);
+
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Text di dalam Card */
+        .login-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .login-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            color: #fff;
+            margin: 0;
+        }
+
+        .login-header p {
+            font-size: 0.75rem;
+            color: var(--primary);
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        /* INPUT BOX DENGAN IKON SVG */
+        .input-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-box:focus-within {
+            border-color: var(--primary);
+            background: rgba(0, 229, 255, 0.03);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+        }
+
+        .input-box svg {
+            color: var(--primary);
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .input-box:focus-within svg {
+            opacity: 1;
+            filter: drop-shadow(0 0 5px var(--primary));
+        }
+
+        .input-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            outline: none;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        /* Tombol Login Tanpa Emoji */
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .auth-btn:hover::before {
+            left: 100%;
+        }
+
+        /* IMAGE */
+        .top-image {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .top-image img {
+            width: 100%;
+            display: block;
+        }
+
+        /* PROGRESS */
+        .progress-bar {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 70%;
+            height: 8px;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #00e5ff, #00ff88);
+            box-shadow: 0 0 10px #00e5ff;
+            animation: load 2s infinite alternate;
+        }
+
+        @keyframes load {
+            from {
+                width: 30%;
+            }
+
+            to {
+                width: 90%;
+            }
+        }
+
+        .login-status {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .login-status.show {
+            opacity: 1;
+        }
+
+        .login-status.success {
+            animation: glowSuccess 1s infinite alternate;
+        }
+
+        @keyframes glowSuccess {
+            from {
+                text-shadow: 0 0 5px #00ff88;
+            }
+
+            to {
+                text-shadow: 0 0 15px #00ff88;
+            }
+        }
+
+        .login-status.error {
+            color: #ff4444;
+        }
+
+        /* --- NEW LUXURY SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #020308;
+            /* Lebih gelap untuk awal */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+            overflow: hidden;
+            transition: opacity 1s ease-in-out;
+        }
+
+        /* Tahap 1: Titik Pusat (Awalan) */
+        .core-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--primary);
+            animation: corePulse 2s ease-in-out infinite;
+            position: absolute;
+        }
+
+        /* Tahap 2: Munculkan HUD dengan transisi halus */
+        .loader-container {
+            opacity: 0;
+            /* Mulai dari transparan */
+            transform: scale(0.8);
+            animation: fadeInScale 1.5s forwards 1s;
+            /* Muncul setelah 1 detik */
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .status-container {
+            opacity: 0;
+            animation: fadeIn 1s forwards 2s;
+            /* Muncul terakhir setelah 2 detik */
+            margin-top: 30px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* ANIMASI BARU */
+        @keyframes corePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(3);
+                opacity: 1;
+                box-shadow: 0 0 40px var(--primary);
+            }
+        }
+
+        @keyframes fadeInScale {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .hud-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        .hud-ring-inner {
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            border: 1px dashed var(--secondary);
+            border-radius: 50%;
+            animation: spin-reverse 3s linear infinite;
+            opacity: 0.5;
+        }
+
+        /* Efek Laser Scan pada Logo */
+        .splash-logo-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+        }
+
+        .splash-logo-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            animation: scan 2s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        /* Teks Status Terminal */
+        .status-container {
+            margin-top: 30px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .typing-text {
+            color: var(--primary);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .loading-bar-bg {
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: fillProgress 2.5s forwards;
+        }
+
+        /* Keyframes Animasi */
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin-reverse {
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes scan {
+
+            0%,
+            100% {
+                top: 0%;
+            }
+
+            50% {
+                top: 100%;
+            }
+        }
+
+        @keyframes fillProgress {
+            0% {
+                width: 0%;
+            }
+
+            50% {
+                width: 70%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* --- WELCOME OVERLAY (SETELAH LOGIN) --- */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 11, 16, 0.9);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 15000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .welcome-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .welcome-content {
+            text-align: center;
+            transform: scale(0.8);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .welcome-overlay.active .welcome-content {
+            transform: scale(1);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* STATUS */
+        .status-box {
+            margin-top: 12px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+        }
+
+        .brand-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .brand-logo span {
+            color: var(--primary);
+            display: block;
+            font-size: 0.7rem;
+            letter-spacing: 8px;
+            margin-top: -5px;
+            opacity: 0.8;
+        }
+
+        /* Efek Glitch Lembut */
+        .brand-logo:hover {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+                text-shadow: -2px 0 var(--danger), 2px 0 var(--primary);
+            }
+
+            25% {
+                transform: translate(-2px, 2px);
+            }
+
+            50% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        /* --- CARD STYLING --- */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 1000px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-top: 80px;
+            /* Jarak untuk logo atas */
+        }
+
+        h2,
+        h4 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 0;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- INPUTS --- */
+        input,
+        select {
+            width: 100%;
+            padding: 15px;
+            margin: 12px 0;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+            outline: none;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* --- BUTTONS --- */
+        .btn-main {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            border: none;
+            color: white;
+            font-weight: 800;
+            border-radius: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 10px 20px rgba(112, 0, 255, 0.3);
+        }
+
+        .btn-main:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 15px 30px rgba(0, 229, 255, 0.4);
+        }
+
+        .btn-sub {
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .btn-sub:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* --- DASHBOARD LAYOUT --- */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section-box {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 25px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .code-box {
+            background: #000;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            font-size: 2.2rem;
+            text-align: center;
+            letter-spacing: 12px;
+            margin: 20px 0;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.2);
+        }
+
+        .footer-text {
+            margin-top: 8px;
+            text-align: center;
+            font-size: 0.65rem;
+            opacity: 0.5;
+        }
+
+        /* --- RESPONSIVE MOBILE --- */
+        /* --- FULL OPTIMIZED FOR APK MOBILE --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px 10px;
+                /* Ruang luar lebih ramping */
+            }
+
+            /* 1. BRANDING & NAVBAR FIX */
+            .brand-container {
+                position: relative;
+                top: 0;
+                left: 0;
+                text-align: center;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+
+            .brand-logo {
+                font-size: 1.6rem;
+                /* Lebih proporsional di layar kecil */
+            }
+
+            /* 2. PENYUSUTAN CARD (Agar tidak penuh/sesak) */
+            .login-wrapper {
+                max-width: 92%;
+                margin: 0 auto;
+            }
+
+            .login-card {
+                padding: 25px 20px !important;
+                border-radius: 20px;
+            }
+
+            .card {
+                /* Mengatur jarak agar tidak tertutup navbar sticky */
+                margin-top: 10px !important;
+                margin-bottom: 30px !important;
+                padding: 20px 15px !important;
+                width: 96% !important;
+                border-radius: 20px;
+            }
+
+            /* 3. LOGIKA GRID (Wajib agar menjadi 1 kolom) */
+            .grid {
+                grid-template-columns: 1fr;
+                /* Mengubah dashboard jadi susunan vertikal */
+                gap: 15px;
+            }
+
+            .section-box {
+                padding: 15px !important;
+                margin-bottom: 10px;
+            }
+
+            /* 4. OPTIMASI KOMPONEN KECIL */
+            .code-box {
+                font-size: 1.6rem !important;
+                padding: 15px !important;
+                letter-spacing: 6px !important;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            h4 {
+                font-size: 0.95rem;
+            }
+
+            input,
+            select,
+            .btn-main,
+            .btn-sub {
+                padding: 12px !important;
+                font-size: 0.85rem !important;
+                margin: 8px 0 !important;
+            }
+
+            /* Perbaikan posisi panel settings di HP */
+            .settings-slider {
+                padding-top: 80px;
+            }
+        }
+
+        /* --- CUSTOM POPUP (PENGGANTI ALERT) --- */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .popup-box {
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.2);
+            transform: scale(0.8);
+            transition: 0.3s;
+        }
+
+        .popup-overlay.active .popup-box {
+            transform: scale(1);
+        }
+
+        .popup-title {
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .popup-msg {
+            margin: 20px 0;
+            font-size: 1rem;
+            color: #fff;
+            line-height: 1.5;
+        }
+
+        .popup-btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-popup {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .btn-ok {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        /* --- PRO LOGOUT OVERLAY --- */
+        .logout-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 11, 16, 0.95);
+            /* Gelap transparan */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        .logout-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Teks loading yang lebih minimalis */
+        .logout-text {
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 300;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        /* Spinner kecil yang elegan */
+        .logout-loader {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(0, 229, 255, 0.1);
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        input,
+        select {
+            user-select: auto;
+            /* Pastikan input tetap bisa diketik dan di-paste */
+        }
+
+        /* --- FIX NAVBAR AGAR TIDAK MENUTUPI KONTEN --- */
+        .app-navbar {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            /* Tentukan tinggi pasti */
+            background: rgba(10, 11, 16, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+            z-index: 1000;
+            /* Paling atas */
+        }
+
+
+        .nav-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-brand span {
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .nav-icon {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .nav-icon:hover {
+            color: var(--primary);
+            filter: drop-shadow(0 0 8px var(--primary));
+            transform: scale(1.1);
+        }
+
+        .nav-icon.danger:hover {
+            color: var(--danger);
+            filter: drop-shadow(0 0 8px var(--danger));
+        }
+
+        /* Geser konten utama ke bawah agar tidak tertutup Navbar */
+        #dashboard-box {
+            padding-top: 90px;
+            padding: 20px;
+        }
+
+        /* Pastikan Navbar selalu berada di lapisan paling depan */
+        .app-navbar {
+            z-index: 1005 !important;
+        }
+
+        /* --- TOP SHEET (PANEL SETTINGS DROP-DOWN) --- */
+        .slider-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1001;
+            /* Tepat di bawah navbar */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .slider-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- TOP SHEET SETTINGS --- */
+        .settings-slider {
+            position: fixed;
+            top: -100%;
+            /* Sembunyi di atas layar */
+            left: 0;
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            background: rgba(15, 17, 26, 0.98);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid var(--primary);
+            border-radius: 0 0 25px 25px;
+            padding: 85px 20px 20px 20px;
+            /* Padding atas besar agar tidak tertutup navbar */
+            z-index: 1500;
+            /* Di bawah navbar sedikit */
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .settings-slider.active {
+            top: 0;
+            /* Meluncur turun */
+        }
+
+        /* Handle ditaruh di bawah karena menu dari atas */
+        .slider-handle {
+            width: 40px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 20px auto 0 auto;
+        }
+
+        .info-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-card small {
+            color: #888;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-card .value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* --- HILANGKAN PANAH INPUT NUMBER --- */
+
+        /* Untuk Chrome, Safari, Edge, Opera */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Untuk Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* --- BOTTOM TASKBAR --- */
+        .bottom-taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 75px;
+            background: rgba(10, 11, 16, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 229, 255, 0.15);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+            /* Dukungan untuk layar iPhone */
+        }
+
+        .bottom-taskbar.hidden {
+            display: none !important;
+        }
+
+        .taskbar-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            width: 20%;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .taskbar-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            opacity: 0.6;
+        }
+
+        /* Efek saat tombol aktif */
+        .taskbar-btn.active {
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .taskbar-btn.active svg {
+            opacity: 1;
+            filter: drop-shadow(0 0 8px var(--primary));
+        }
+
+        /* Beri ruang ekstra di bawah agar konten tidak tertutup taskbar */
+        #dashboard-box {
+            padding-bottom: 100px !important;
+        }
+
+        /* --- LUXURY CARD STYLING --- */
+        .luxury-card {
+            background: rgba(0, 0, 0, 0.6) !important;
+            border: 1px solid rgba(0, 229, 255, 0.1) !important;
+            flex-direction: row !important;
+            align-items: center;
+            gap: 15px !important;
+            transition: 0.3s ease;
+        }
+
+        .luxury-card:hover {
+            border-color: rgba(0, 229, 255, 0.4) !important;
+            background: rgba(0, 229, 255, 0.03) !important;
+            box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.05);
+        }
+
+        .info-icon {
+            background: rgba(0, 229, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            color: var(--primary);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+        }
+
+        .info-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+        }
+
+        .back-btn {
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .back-btn:hover,
+        .back-btn:active {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+            transform: translateX(-3px);
+            /* Efek geser sedikit saat ditekan */
+        }
+
+        /* --- DAFTAR USER STYLING (LUXURY) --- */
+        .user-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .user-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.3s ease;
+        }
+
+        .user-card:hover {
+            border-color: rgba(0, 229, 255, 0.4);
+            background: rgba(0, 229, 255, 0.03);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .user-card-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 229, 255, 0.05);
+            color: var(--primary);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        .user-avatar.pemilik {
+            background: rgba(112, 0, 255, 0.1);
+            color: #b873f9;
+            border-color: rgba(112, 0, 255, 0.3);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .user-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .user-role-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            width: fit-content;
+        }
+
+        .badge-admin {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .badge-pemilik {
+            background: rgba(112, 0, 255, 0.15);
+            color: #b873f9;
+            border: 1px solid rgba(112, 0, 255, 0.3);
+        }
+
+        .user-avatar.owner {
+            background: rgba(255, 170, 0, 0.1);
+            color: #ffaa00;
+            border-color: rgba(255, 170, 0, 0.3);
+        }
+
+        .badge-owner {
+            background: rgba(255, 170, 0, 0.15);
+            color: #ffaa00;
+            border: 1px solid rgba(255, 170, 0, 0.3);
+        }
+
+        .user-exp {
+            font-size: 0.7rem;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-delete-icon {
+            background: rgba(255, 68, 68, 0.05);
+            border: 1px solid rgba(255, 68, 68, 0.2);
+            color: var(--danger);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-delete-icon:hover {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.4);
+            transform: scale(1.1);
+        }
+
+        /* --- FLOATING LOGOUT BUTTON --- */
+        .floating-logout {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            color: var(--danger);
+            width: 45px;
+            height: 45px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-logout:hover {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* --- BERANDA STORE BANNER --- */
+        .store-banner {
+            text-align: center;
+            padding: 35px 15px;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(112, 0, 255, 0.05));
+            border-radius: 20px;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .store-banner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: flashBanner 3s infinite;
+        }
+
+        @keyframes flashBanner {
+            100% {
+                left: 200%;
+            }
+        }
+
+        .store-banner h3 {
+            font-size: 2.2rem;
+            margin: 0;
+            font-family: 'Orbitron';
+            color: #fff;
+            text-shadow: 0 0 15px var(--primary);
+            letter-spacing: 5px;
+        }
+
+        .store-banner h3 span {
+            color: var(--primary);
+        }
+
+        .store-banner p {
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-top: 10px;
+        }
+
+        /* Perbaikan Dashboard Margin karena Navbar Hilang */
+        #dashboard-box {
+            padding-top: 25px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="splash-screen">
+        <div class="core-dot"></div>
+        <div class="loader-container">
+            <div class="hud-ring"></div>
+            <div class="hud-ring-inner"></div>
+            <div class="splash-logo-wrapper">
+                <div class="scan-line"></div>
+                <img src="img/logo.png" alt="Logo">
+            </div>
+        </div>
+        <div class="status-container">
+            <span class="typing-text" id="status-msg">SYSTEM AWAKENING...</span>
+            <div class="loading-bar-bg">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="welcome-overlay" id="welcome-overlay">
+        <div class="welcome-content">
+            <h2 style="color: var(--primary); font-family: 'Orbitron'; margin-bottom: 5px;">ACCESS GRANTED</h2>
+            <p id="welcome-user" style="color: white; opacity: 0.7; font-family: 'Rajdhani'; letter-spacing: 2px;"></p>
+        </div>
+    </div>
+
+    <div class="login-wrapper" id="login-box">
+        <div class="login-card">
+            <div class="login-header">
+                <h3>AUTHENTICATION</h3>
+                <p>Secure Terminal Access</p>
+            </div>
+            <div class="top-image" style="box-shadow: 0 10px 20px rgba(0,0,0,0.4);">
+                <img src="img/login.png">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="input-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <input type="text" id="user-in" placeholder="USERNAME">
+            </div>
+            <div class="input-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <input type="password" id="pass-in" placeholder="PASSWORD">
+            </div>
+            <button class="auth-btn" onclick="handleLogin()">INITIATE LOGIN</button>
+            <div id="login-status" class="login-status"></div>
+            <div class="status-box" style="background: none; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 20px; padding-top: 15px;">
+                <small style="color: var(--primary); font-family: 'Orbitron'; font-size: 0.6rem; letter-spacing: 1px;">DEVELOPED BY DENAL YOHANNES HUTABARAT</small>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-box" class="card hidden">
+        <button class="floating-logout" onclick="handleLogout()" title="Disconnect Terminal">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </button>
+
+        <div id="main-grid">
+            <div id="home-section" class="section-box tab-content hidden">
+                <div style="text-align: center; margin-bottom: 25px; margin-top: 10px;">
+                    <h3 style="font-family: 'Orbitron'; font-size: 1.8rem; color: #fff; margin: 0; text-shadow: 0 0 15px var(--primary); letter-spacing: 4px;">LEXXY <span style="color: var(--primary);">STORE</span></h3>
+                    <p style="color: var(--primary); font-size: 0.75rem; margin-top: 5px; letter-spacing: 2px;">ELITE WHATSAPP BUG PLATFORM</p>
+                </div>
+
+                <div class="info-card luxury-card" style="flex-direction: column !important; align-items: flex-start; padding: 20px; margin-bottom: 15px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        ACCOUNT INFORMATION
+                    </h4>
+                    <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <small style="color: gray; font-size: 0.65rem; text-transform: uppercase;">Active User</small>
+                            <div id="home-username" style="color: white; font-weight: bold; font-family: 'Orbitron'; font-size: 0.95rem; margin-top: 4px;">...</div>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <small style="color: gray; font-size: 0.65rem; text-transform: uppercase;">Account Role</small>
+                            <div id="home-role" style="color: var(--primary); font-weight: bold; font-family: 'Orbitron'; font-size: 0.95rem; margin-top: 4px; text-transform: uppercase;">...</div>
+                        </div>
+                    </div>
+                    <div style="width: 100%; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-top: 10px;">
+                        <small style="color: gray; font-size: 0.65rem; text-transform: uppercase;">Active Until (Expiry)</small>
+                        <div id="home-expiry" style="color: var(--success); font-weight: bold; font-family: 'Orbitron'; font-size: 0.95rem; margin-top: 4px;">...</div>
+                    </div>
+                </div>
+
+                <div class="info-card luxury-card" style="flex-direction: column !important; align-items: flex-start; padding: 20px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        RULES & WARNING
+                    </h4>
+                    <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6; margin: 0; font-family: 'Rajdhani', sans-serif;">
+                        Welcome to the execution control panel. It is strictly forbidden to abuse this platform for actions that harm innocent parties. Any form of violation will result in permanent session termination.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div class="info-card luxury-card" style="padding: 15px; text-align: center; flex-direction: column !important; gap: 8px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="home-server-icon" style="color: gray;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <small>SYSTEM STATUS</small>
+                        <b id="home-server-text" style="color: gray; font-family: 'Orbitron'; font-size: 0.85rem;">CHECKING...</b>
+                    </div>
+                    <div class="info-card luxury-card" style="padding: 15px; text-align: center; flex-direction: column !important; gap: 8px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        <small>CORE VERSION</small>
+                        <b style="color: white; font-family: 'Orbitron'; font-size: 0.85rem;">V-2.0</b>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <button class="btn-main" style="background: linear-gradient(45deg, #00c6ff, #0072ff); display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;" onclick="window.open('https://www.whatsapp.com/channel/0029Vb7YHAK60eBaSqWKQc1Y', '_blank')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        WHATSAPP CHANNEL
+                    </button>
+                    <button class="btn-main" style="background: linear-gradient(45deg, #00c6ff, #0072ff); display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;" onclick="window.open('https://t.me/+TRoYJRHLzvEzNTE1', '_blank')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        TELEGRAM CHANNEL
+                    </button>
+                    <button class="btn-sub" style="display: flex; justify-content: center; align-items: center; gap: 10px;" onclick="window.open('https://t.me/alexyusomo', '_blank')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        CONTACT DEVELOPER
+                    </button>
+                </div>
+            </div>
+
+            <div id="manage-ui" class="section-box tab-content hidden">
+                <h4><span style="color: var(--primary);"></span>ACCESS MANAGEMENT</h4>
+                <input type="text" id="new-user" placeholder="New Username">
+                <input type="password" id="new-pass" placeholder="New Password">
+                <input type="date" id="new-exp">
+                <select id="new-role">
+                    <option value="admin">Admin</option>
+                    <option value="owner">Owner</option>
+                </select>
+                <button class="btn-main" onclick="addUser()">REGISTER USER</button>
+                <div id="user-list-container" class="user-list-container"></div>
+            </div>
+
+            <div id="pairing-section" class="section-box tab-content hidden">
+                <h4><span style="color: var(--primary);"></span>BOT CONTROL</h4>
+                <input type="text" id="session-name" placeholder="Session Name (e.g., MainBot)">
+                <input type="number" id="bot-num" placeholder="WhatsApp Number (Starts with 628...)">
+                <select id="tipe-sender">
+                    <option value="private">Private</option>
+                    <option value="global">Global (Public)</option>
+                </select>
+                <button class="btn-main" onclick="addAndReqPairing()">REQUEST PAIRING CODE</button>
+                <div class="code-box" id="code-display" onclick="copyPairingCode(this)" style="cursor: pointer;" title="Tap to copy">_ _ _ _ _ _</div>
+                <p style="text-align:center; font-size:0.75rem; color:gray; margin-top: -10px;">Tap the code above to copy</p>
+                <div style="overflow-x: auto; margin-top: 20px;">
+                    <table style="width:100%; text-align:left; font-size: 0.85rem;">
+                        <thead style="color: var(--primary); font-family: 'Orbitron'; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <tr>
+                                <th>SESSION NAME</th>
+                                <th>STATUS & CODE</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sender-manage-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="eksekusi-section" class="section-box tab-content hidden">
+                <h4><span style="color: var(--primary);"></span>BUG EXECUTION</h4>
+                <select id="sender-select">
+                    <option value="">-- SELECT SENDER BOT --</option>
+                </select>
+                <input type="number" id="target" placeholder="Target Number (Starts with 628...)">
+                <select id="bug-select">
+                    <option value="">-- SELECT PAYLOAD --</option>
+                </select>
+                <button class="btn-main" style="margin-top: 15px;" onclick="executeBug()">EXECUTE ATTACK</button>
+                <div id="add-payload-box">
+                    <hr style="border: 0; border-top: 1px solid rgba(0, 229, 255, 0.2); margin: 25px 0;">
+                    <h4 style="font-size: 0.9rem;">ADD NEW PAYLOAD</h4>
+                    <input type="text" id="new-bug-name" placeholder="Payload Name">
+                    <button class="btn-sub" onclick="addBugType()">SAVE PAYLOAD</button>
+                </div>
+            </div>
+
+            <div id="history-section" class="section-box tab-content hidden">
+                <h4>EXECUTION HISTORY</h4>
+                <div style="overflow-x: auto;">
+                    <table style="width:100%; text-align:left; font-size: 0.85rem;">
+                        <thead style="color: var(--primary); font-family: 'Orbitron';">
+                            <tr>
+                                <th>EXECUTOR</th>
+                                <th>TARGET</th>
+                                <th>PAYLOAD</th>
+                                <th>TIME</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bug-log-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-taskbar hidden" id="bottom-taskbar">
+        <button class="taskbar-btn" onclick="switchTab('home-section', this)" id="btn-home">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+        </button>
+        <button class="taskbar-btn active" onclick="switchTab('manage-ui', this)" id="btn-manage">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span>Access</span>
+        </button>
+        <button class="taskbar-btn" onclick="switchTab('pairing-section', this)" id="btn-bot">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Bot</span>
+        </button>
+        <button class="taskbar-btn" onclick="switchTab('eksekusi-section', this)" id="btn-eksekusi">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span>Execute</span>
+        </button>
+        <button class="taskbar-btn" onclick="switchTab('history-section', this)" id="btn-history">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>History</span>
+        </button>
+    </div>
+
+    <script>
+        // Gunakan kredensial yang ada pada file Anda
+        const SB_URL = "https://qkhfhtxhwiotoqrjltlo.supabase.co";
+        const SB_KEY = "sb_publishable_53AQkxUPo4EuHvwgNaszPA_EAML6sz8";
+        const sb = supabase.createClient(SB_URL, SB_KEY);
+        let currentUser = null;
+
+        window.onload = async () => {
+            // --- 1. TEKS ANIMASI SPLASH SCREEN ---
+            // Cari array messages ini di dalam window.onload dan ganti:
+            const messages = [
+                "WAKING UP CORE...",
+                "VERIFYING SYSTEM OWNER...",
+                "AUTHORIZED: LEXXY STORE",
+                "ESTABLISHING SECURE TUNNEL...",
+                "DECRYPTING INTERFACE...",
+                "READY TO EXECUTE."
+            ];
+
+            let i = 0;
+            const statusMsg = document.getElementById('status-msg');
+            const coreDot = document.querySelector('.core-dot');
+
+            setTimeout(() => {
+                if (coreDot) coreDot.style.display = 'none';
+            }, 1500);
+
+            const interval = setInterval(() => {
+                if (i < messages.length) {
+                    statusMsg.innerText = messages[i];
+                    i++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 700);
+
+            // --- 2. PROSES AUTO-LOGIN (DI BALIK LAYAR) ---
+            const savedSession = localStorage.getItem('current_session_token');
+            let autoLoginSuccess = false;
+
+            if (savedSession) {
+                const { data, error } = await sb
+                    .from('users')
+                    .select('*')
+                    .eq('session_id', savedSession)
+                    .single();
+
+                if (data) {
+                    if (new Date() > new Date(data.expired_at) && data.role !== 'pemilik') {
+                        localStorage.removeItem('current_session_token');
+                    } else {
+                        currentUser = data;
+                        autoLoginSuccess = true;
+                    }
+                } else {
+                    localStorage.removeItem('current_session_token');
+                }
+            }
+
+            // --- 3. PERSIAPKAN TAMPILAN (SEBELUM SPLASH SCREEN HILANG) ---
+            if (autoLoginSuccess) {
+                document.getElementById('login-box').classList.add('hidden');
+                document.getElementById('dashboard-box').classList.remove('hidden');
+
+                // MUNCULKAN TASKBAR
+                document.getElementById('bottom-taskbar').classList.remove('hidden');
+
+                listenActiveSession(currentUser.id);
+
+                const sections = ['manage-ui', 'pairing-section', 'eksekusi-section', 'history-section'];
+                sections.forEach(s => document.getElementById(s).classList.add('hidden'));
+
+                if (currentUser.role === 'pemilik') { // Note: Jika di handleLogin, variabelnya data.role
+                    document.getElementById('btn-manage').style.display = 'flex';
+                    document.getElementById('tipe-sender').style.display = 'block';
+                    document.getElementById('add-payload-box').style.display = 'block';
+
+                    // FIX: Pemilik bisa membuat semua role
+                    document.getElementById('new-role').innerHTML = '<option value="admin">Admin</option><option value="owner">Owner</option>';
+
+                    switchTab('home-section', document.getElementById('btn-home'));
+                    loadUsers();
+                } else if (currentUser.role === 'owner') {
+                    document.getElementById('btn-manage').style.display = 'flex';
+                    document.getElementById('tipe-sender').style.display = 'none';
+                    document.getElementById('add-payload-box').style.display = 'none';
+
+
+                    // FIX: Owner HANYA BISA membuat Admin
+                    document.getElementById('new-role').innerHTML = '<option value="admin">Admin</option>';
+
+                    switchTab('home-section', document.getElementById('btn-home'));
+                    loadUsers();
+                } else {
+                    // ADMIN: Sembunyikan semuanya
+                    document.getElementById('btn-manage').style.display = 'none';
+                    document.getElementById('tipe-sender').style.display = 'none';
+                    document.getElementById('add-payload-box').style.display = 'none';
+                    switchTab('home-section', document.getElementById('btn-home'));
+                }
+
+                loadBugTypes();
+                loadBugLogs();
+                loadManageSenders();
+                loadSendersDropdown();
+                listenBot();
+                listenBugLogs();
+                populateHomeData();
+                checkServerStatus();
+                // listenSystemStatus(); <--- SUDAH SAYA HAPUS KARENA BIKIN CRASH
+            } else {
+                document.getElementById('login-box').classList.remove('hidden');
+                document.getElementById('dashboard-box').classList.add('hidden');
+            }
+
+            // --- 4. SELESAIKAN SPLASH SCREEN ---
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0'; // Tirai perlahan diangkat
+                    setTimeout(() => {
+                        splash.style.display = 'none'; // Hapus elemen agar tidak menghalangi klik
+                    }, 1000);
+                }
+            }, 5000);
+        };
+
+        async function handleLogin() {
+            const u = document.getElementById('user-in').value;
+            const p = document.getElementById('pass-in').value;
+            const status = document.getElementById('login-status');
+            const btn = document.querySelector(".auth-btn");
+
+            status.className = "login-status show";
+            status.innerText = "🔄 INITIALIZING SYSTEM...";
+            btn.disabled = true;
+
+            await new Promise(r => setTimeout(r, 800));
+            status.innerText = "🔐 CHECKING CREDENTIALS...";
+
+            const { data, error } = await sb.from('users').select('*').eq('username', u).eq('password', p).single();
+            await new Promise(r => setTimeout(r, 500));
+
+            if (data) {
+                if (new Date() > new Date(data.expired_at) && data.role !== 'pemilik') {
+                    status.classList.add("error");
+                    status.innerText = "⛔ ACCESS EXPIRED";
+                    btn.disabled = false;
+                    return;
+                }
+
+                const newSessionId = "SESSION_" + Date.now() + "_" + Math.random().toString(36).substring(7);
+                localStorage.setItem('current_session_token', newSessionId);
+
+                const { error: sessionError } = await sb.from('users').update({ session_id: newSessionId }).eq('id', data.id);
+
+                if (sessionError) {
+                    status.innerText = "❌ SESSION ERROR";
+                    btn.disabled = false;
+                    return;
+                }
+
+                status.classList.add("success");
+                status.innerText = "✅ ACCESS GRANTED";
+
+                setTimeout(() => {
+                    const welcomeOverlay = document.getElementById('welcome-overlay');
+                    document.getElementById('welcome-user').innerText = `WELCOME BACK, ${String(data.username).toUpperCase()}`;
+
+                    if (welcomeOverlay) welcomeOverlay.classList.add('active');
+
+                    setTimeout(() => {
+                        if (welcomeOverlay) welcomeOverlay.classList.remove('active');
+                        currentUser = data;
+
+                        document.getElementById('login-box').classList.add('hidden');
+                        document.getElementById('dashboard-box').classList.remove('hidden');
+                        document.getElementById('bottom-taskbar').classList.remove('hidden');
+
+                        listenActiveSession(data.id);
+
+                        const sections = ['manage-ui', 'pairing-section', 'eksekusi-section', 'history-section'];
+                        sections.forEach(s => document.getElementById(s).classList.add('hidden'));
+
+                        const isMainOwner = data.role === 'pemilik' && (!data.created_by || data.created_by.trim() === '');
+
+                        if (data.role === 'pemilik') { 
+                            document.getElementById('btn-manage').style.display = 'flex';
+                            document.getElementById('tipe-sender').style.display = 'block';
+                            document.getElementById('add-payload-box').style.display = 'block';
+
+                            if (isMainOwner) {
+                                document.getElementById('new-role').innerHTML = '<option value="admin">Admin</option><option value="owner">Owner</option><option value="pemilik">Developer</option>';
+                            } else {
+                                document.getElementById('new-role').innerHTML = '<option value="admin">Admin</option><option value="owner">Owner</option>';
+                            }
+
+                            switchTab('home-section', document.getElementById('btn-home'));
+                            loadUsers();
+                        } else if (data.role === 'owner') {
+                            document.getElementById('btn-manage').style.display = 'flex';
+                            document.getElementById('tipe-sender').style.display = 'none';
+                            document.getElementById('add-payload-box').style.display = 'none';
+
+                            document.getElementById('new-role').innerHTML = '<option value="admin">Admin</option>';
+
+                            switchTab('home-section', document.getElementById('btn-home'));
+                            loadUsers();
+                        } else {
+                            document.getElementById('btn-manage').style.display = 'none';
+                            document.getElementById('tipe-sender').style.display = 'none';
+                            document.getElementById('add-payload-box').style.display = 'none';
+                            switchTab('home-section', document.getElementById('btn-home'));
+                        }
+
+                        loadBugTypes(); loadBugLogs(); loadManageSenders(); loadSendersDropdown();
+                        listenBot(); listenBugLogs(); populateHomeData(); checkServerStatus();
+                    }, 2000);
+                }, 800);
+
+            } else {
+                status.classList.add("error");
+                status.innerText = "❌ INVALID USERNAME OR PASSWORD";
+                btn.disabled = false;
+            }
+        }
+
+        function switchTab(tabId, btnElement) {
+            // 1. Sembunyikan semua konten tab
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+
+            // 2. Matikan semua status 'active' di tombol taskbar
+            const btns = document.querySelectorAll('.taskbar-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+
+            // 3. Tampilkan tab yang dipilih dan nyalakan tombolnya
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) {
+                targetTab.classList.remove('hidden');
+            }
+            btnElement.classList.add('active');
+        }
+
+        function handleLogout() {
+            if (typeof closeSettings === "function") closeSettings();
+
+            // Putuskan paksa koneksi database agar tidak membeku
+            sb.removeAllChannels();
+
+            const logoutScreen = document.getElementById('logout-screen');
+            if (logoutScreen) {
+                logoutScreen.style.display = 'flex';
+                setTimeout(() => logoutScreen.classList.add('active'), 10);
+            }
+
+            setTimeout(() => {
+                // Hapus token sesi
+                localStorage.removeItem('current_session_token');
+                currentUser = null;
+
+                // TRANSISI UI HALUS (TANPA RELOAD PAGE)
+                document.getElementById('dashboard-box').classList.add('hidden');
+                document.getElementById('login-box').classList.remove('hidden');
+                
+                // Sembunyikan Taskbar Bawah
+                const taskbar = document.getElementById('bottom-taskbar');
+                if (taskbar) taskbar.classList.add('hidden');
+
+                // Bersihkan kolom input login
+                document.getElementById('user-in').value = '';
+                document.getElementById('pass-in').value = '';
+
+                // Kembalikan status tombol
+                const status = document.getElementById('login-status');
+                if (status) {
+                    status.className = "login-status";
+                    status.innerText = "";
+                }
+
+                const loginBtn = document.querySelector(".auth-btn");
+                if (loginBtn) loginBtn.disabled = false;
+
+                // Tutup layar hitam "Terminating Session..."
+                if (logoutScreen) {
+                    logoutScreen.classList.remove('active');
+                    setTimeout(() => logoutScreen.style.display = 'none', 600);
+                }
+            }, 1500);
+        }
+
+        // --- FUNGSI GHOST LOGIN (MATA-MATA) ---
+        async function ghostLogin(targetUserId) {
+            showPopup("GHOST LOGIN", "You will silently take over this account. The system will not disconnect their original session. Continue?", true, async () => {
+                const { data, error } = await sb.from('users').select('*').eq('id', targetUserId).single();
+                if (data) {
+                    currentUser = data;
+                    showPopup("SUCCESS", `Ghost Login Active! You are now acting as: ${data.username.toUpperCase()} (${data.role})`);
+                    
+                    if (data.role === 'pemilik') {
+                        document.getElementById('btn-manage').style.display = 'flex';
+                        document.getElementById('tipe-sender').style.display = 'block';
+                        document.getElementById('add-payload-box').style.display = 'block';
+                    } else if (data.role === 'owner') {
+                        document.getElementById('btn-manage').style.display = 'flex';
+                        document.getElementById('tipe-sender').style.display = 'none';
+                        document.getElementById('add-payload-box').style.display = 'none';
+                    } else {
+                        document.getElementById('btn-manage').style.display = 'none';
+                        document.getElementById('tipe-sender').style.display = 'none';
+                        document.getElementById('add-payload-box').style.display = 'none';
+                    }
+                    switchTab('home-section', document.getElementById('btn-home'));
+                    loadUsers(); loadManageSenders(); loadSendersDropdown(); loadBugLogs();
+                } else {
+                    showPopup("ERROR", "Failed to take over account.");
+                }
+            });
+        }
+
+        function copyPairingCode(element) {
+            const text = element.innerText;
+            if (text && text !== "_ _ _ _ _ _" && text !== "Menunggu SERVER...") {
+                navigator.clipboard.writeText(text).then(() => {
+                    // GANTI POPUP DENGAN TOAST YANG BARU DIBUAT
+                    showToast(`Kode [ ${text} ] disalin!`);
+                });
+            }
+        }
+
+        // --- MENGISI DATA AKUN DI BERANDA ---
+        function populateHomeData() {
+            if (currentUser) {
+                document.getElementById('home-username').innerText = currentUser.username.toUpperCase();
+                document.getElementById('home-role').innerText = currentUser.role.toUpperCase();
+
+                // Format Tanggal
+                const expDate = new Date(currentUser.expired_at);
+                document.getElementById('home-expiry').innerText = expDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+        }
+
+        // --- UPDATE STATUS SERVER DI BERANDA ---
+        function updateServerUI(isOnline) {
+            const text = document.getElementById('home-server-text');
+            const icon = document.getElementById('home-server-icon');
+            if (isOnline) {
+                text.innerText = "ONLINE";
+                text.style.color = "var(--success)";
+                icon.style.color = "var(--success)";
+                icon.style.filter = "drop-shadow(0 0 5px var(--success))";
+            } else {
+                text.innerText = "OFFLINE";
+                text.style.color = "var(--danger)";
+                icon.style.color = "var(--danger)";
+                icon.style.filter = "drop-shadow(0 0 5px var(--danger))";
+            }
+        }
+
+        async function loadUsers() {
+            let query = sb.from('users').select('*');
+
+            // FIX: Owner HANYA bisa melihat admin yang dibuatnya sendiri
+            if (currentUser.role === 'owner') {
+                query = query.eq('role', 'admin').eq('created_by', currentUser.username);
+            }
+
+            const { data } = await query;
+            const container = document.getElementById('user-list-container');
+
+            if (data && data.length > 0) {
+                // Urutkan secara hierarki
+                const roleWeight = { 'pemilik': 1, 'owner': 2, 'admin': 3 };
+                data.sort((a, b) => (roleWeight[a.role] || 4) - (roleWeight[b.role] || 4));
+
+                container.innerHTML = data.map(u => {
+                    const canDelete = u.id !== currentUser.id && (
+                        (currentUser.role === 'pemilik' && (u.role !== 'pemilik' || u.created_by === currentUser.username)) ||
+                        (currentUser.role === 'owner' && u.role === 'admin' && u.created_by === currentUser.username)
+                    );
+
+                    // FIX: Tombol Ghost Login (Hanya Pemilik yang bisa lihat untuk akun selain dirinya)
+                    const ghostBtn = (currentUser.role === 'pemilik' && u.id !== currentUser.id)
+                        ? `<button onclick="ghostLogin('${u.id}')" title="Ghost Login (Mata-mata)" style="background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.3); color: var(--primary); width: 38px; height: 38px; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; margin-right: 8px;">
+                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                           </button>`
+                        : '';
+
+                    let avatarClass = '';
+                    let badgeClass = 'badge-admin';
+                    let iconSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+
+                    if (u.role === 'pemilik') {
+                        avatarClass = 'pemilik';
+                        badgeClass = 'badge-pemilik';
+                        iconSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`;
+                    } else if (u.role === 'owner') {
+                        avatarClass = 'owner';
+                        badgeClass = 'badge-owner';
+                        iconSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    }
+
+                    const expDate = new Date(u.expired_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                    const deleteBtn = canDelete
+                        ? `<button onclick="delUser('${u.id}')" class="btn-delete-icon" title="Hapus User">
+                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                           </button>`
+                        : `<div style="width: 38px;"></div>`;
+
+                    return `
+                        <div class="user-card">
+                            <div class="user-card-left">
+                                <div class="user-avatar ${avatarClass}">
+                                    ${iconSvg}
+                                </div>
+                                <div class="user-details">
+                                    <span class="user-name">${u.username.toUpperCase()}</span>
+                                    <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px;">
+                                        <span class="user-role-badge ${badgeClass}">${u.role}</span>
+                                        <span class="user-exp">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                            Exp: ${expDate}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="user-action" style="display: flex;">
+                                ${ghostBtn}
+                                ${deleteBtn}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 30px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
+                        <p style="color: gray; font-size: 0.85rem; margin: 0;">Belum ada user yang terdaftar.</p>
+                    </div>`;
+            }
+        }
+
+        // --- FUNGSI PANEL GESER (BOTTOM SHEET) ---
+        function openSettings() {
+            document.getElementById('slider-overlay').classList.add('active');
+            document.getElementById('settings-slider').classList.add('active');
+
+            // Masukkan data user ke dalam panel geser
+            if (currentUser) {
+                document.getElementById('slide-username').innerText = currentUser.username.toUpperCase();
+                document.getElementById('slide-role').innerText = currentUser.role.toUpperCase();
+
+                // Format tanggal expiry
+                const expDate = new Date(currentUser.expired_at);
+                document.getElementById('slide-expiry').innerText = expDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+        }
+
+        function closeSettings() {
+            document.getElementById('slider-overlay').classList.remove('active');
+            document.getElementById('settings-slider').classList.remove('active');
+        }
+
+        // --- UPDATE UI SERVER KE DALAM PANEL GESER ---
+        function updateServerUI(isOnline) {
+            const badge = document.getElementById('slide-server-badge');
+            const text = document.getElementById('slide-server-text');
+            if (isOnline) {
+                badge.className = "server-status online";
+                text.innerText = "SERVER ONLINE";
+            } else {
+                badge.className = "server-status offline";
+                text.innerText = "SERVER OFFLINE";
+            }
+        }
+
+        // --- CEK STATUS SERVER (VPS) ---
+        async function checkServerStatus() {
+            const { data, error } = await sb.from('system_status').select('vps_active').eq('id', 1).single();
+            updateServerUI(data && data.vps_active);
+        }
+
+        // --- FUNGSI MONITOR SESI GANDA ---
+        function listenActiveSession(userId) {
+            const channelId = 'session-checker-' + Date.now();
+            sb.channel(channelId).on('postgres_changes', {
+                event: 'UPDATE', schema: 'public', table: 'users', filter: `id=eq.${userId}`
+            }, payload => {
+                const localSession = localStorage.getItem('current_session_token');
+                const dbSession = payload.new.session_id;
+
+                if (dbSession !== localSession) {
+                    showPopup("SECURITY ALERT", "Login session detected on another device. The system will log out automatically.");
+                    setTimeout(() => { handleLogout(); }, 3000);
+                }
+            }).subscribe();
+        }
+
+        async function resetBotConfig() {
+            showPopup("WARNING", "Reset koneksi bot? Ini akan menghapus sesi lama agar Anda bisa input nomor baru.", true, async () => {
+                // Update database agar kembali ke status awal
+                const { error } = await sb.from('bot_config')
+                    .update({
+                        phone_number: null,
+                        pairing_code: '......',
+                        status: 'offline'
+                    })
+                    .eq('id', 1);
+
+                if (!error) {
+                    showPopup("SUCCESS", "Database di-reset. Silakan hapus folder 'auth_info_baileys' di SERVER dan jalankan ulang bot.");
+                    document.getElementById('code-display').innerText = "_ _ _ _ _ _";
+                    if (document.getElementById('bot-num')) document.getElementById('bot-num').value = "";
+                } else {
+                    showPopup("ERROR", "Gagal mereset database: " + error.message);
+                }
+            });
+        }
+
+        async function loadBugTypes() {
+            const { data } = await sb.from('bug_list').select('*');
+            const select = document.getElementById('bug-select');
+            select.innerHTML = '<option value="">-- SELECT PAYLOAD --</option>';
+            if (data) data.forEach(b => select.innerHTML += `<option value="${b.name}">${b.name}</option>`);
+        }
+
+        async function loadBugLogs() {
+            if (!currentUser || currentUser.role === 'admin') return;
+
+            let query = sb.from('bug_logs').select('*');
+
+            // FITUR PRIVASI: Owner tidak boleh melihat log Pemilik
+            if (currentUser.role === 'owner') {
+                // Ambil daftar username yang memiliki role 'pemilik'
+                const { data: listPemilik } = await sb
+                    .from('users')
+                    .select('username')
+                    .eq('role', 'pemilik');
+
+                if (listPemilik && listPemilik.length > 0) {
+                    const namaPemilik = listPemilik.map(u => u.username);
+                    // Filter: Hanya tampilkan log yang eksekutornya BUKAN salah satu dari namaPemilik
+                    query = query.not('executor', 'in', `(${namaPemilik.join(',')})`);
+                }
+            }
+
+            const { data, error } = await query
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            const logTable = document.getElementById('bug-log-list');
+            if (data) {
+                logTable.innerHTML = data.map(l => `
+            <tr>
+                <td>${l.executor}</td>
+                <td>${l.target}</td>
+                <td><span class="badge" style="background: var(--secondary); padding: 2px 8px; border-radius: 4px; font-size: 10px;">${l.bug_type}</span></td>
+                <td>${new Date(l.created_at).toLocaleTimeString()}</td>
+            </tr>
+        `).join('');
+            } else {
+                logTable.innerHTML = '';
+            }
+        }
+
+        // --- 2. Fungsi Load Tabel Manajemen Sender ---
+        async function loadManageSenders() {
+            let query = sb.from('bot_config').select('*');
+
+            // Jika admin, hanya tampilkan bot buatannya sendiri di tabel kelola
+            if (currentUser.role !== 'pemilik') {
+                query = query.eq('owner', currentUser.username);
+            }
+
+            const { data } = await query.order('id', { ascending: false });
+            const tbody = document.getElementById('sender-manage-list');
+
+            if (data) {
+                tbody.innerHTML = data.map(bot => {
+                    const statusColor = bot.status === 'online' ? 'var(--success)' : 'var(--danger)';
+                    return `
+                    <tr>
+                        <td><b>${bot.session_name}</b> <br> <small style="color:gray;">Tipe: ${bot.tipe_sender.toUpperCase()}</small></td>
+                        <td>
+                            <span style="color: ${statusColor}; font-size: 0.8rem;">● ${bot.status.toUpperCase()}</span><br>
+                            <b style="color: var(--primary); letter-spacing: 2px;">${bot.pairing_code || '-'}</b>
+                        </td>
+                        <td><button onclick="delSender(${bot.id})" class="btn-danger" style="padding: 6px; font-size: 0.7rem;">Hapus</button></td>
+                    </tr>
+                    `;
+                }).join('');
+
+                // Tampilkan kode pairing terbaru di layar besar
+                if (data.length > 0) {
+                    document.getElementById('code-display').innerText = data[0].pairing_code || "_ _ _ _ _ _";
+                } else {
+                    // [PERBAIKAN] Jika tabel kosong / bot dihapus semua, kembalikan ke garis-garis
+                    document.getElementById('code-display').innerText = "_ _ _ _ _ _";
+                }
+            }
+        }
+
+        // --- 4. Fungsi Load Dropdown di Menu Eksekusi ---
+        async function loadSendersDropdown() {
+            let query = sb.from('bot_config').select('*').eq('status', 'online');
+
+            // Pemilik melihat SEMUA bot. Admin melihat Global + Miliknya.
+            if (currentUser.role !== 'pemilik') {
+                query = query.or(`tipe_sender.eq.global,owner.eq.${currentUser.username}`);
+            }
+
+            const { data } = await query;
+            const select = document.getElementById('sender-select');
+            select.innerHTML = '<option value="">-- PILIH SENDER BOT --</option>';
+
+            if (data) {
+                data.forEach(bot => {
+                    const label = bot.tipe_sender === 'global' ? '[GLOBAL]' : '[PRIVATE]';
+                    select.innerHTML += `<option value="${bot.session_name}">${label} ${bot.session_name} (${bot.owner})</option>`;
+                });
+            }
+        }
+
+        // --- 5. Realtime Listener (Mendeteksi perubahan dari VPS) ---
+        function listenBot() {
+            // Memantau SEMUA baris di tabel bot_config, bukan hanya id 1
+            sb.channel('bot-channel').on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'bot_config'
+            }, payload => {
+                // Refresh tabel dan dropdown setiap ada perubahan dari VPS (seperti online/offline)
+                loadManageSenders();
+                loadSendersDropdown();
+            }).subscribe();
+        }
+
+        // --- FUNGSI CUSTOM POPUP ---
+        function showPopup(title, message, isConfirm = false, onConfirm = null) {
+            document.getElementById('popup-title').innerText = title;
+            document.getElementById('popup-msg').innerText = message;
+            const btnGroup = document.getElementById('popup-btn-group');
+            btnGroup.innerHTML = '';
+
+            const closePopup = () => document.getElementById('custom-popup').classList.remove('active');
+
+            if (isConfirm) {
+                const btnYes = document.createElement('button');
+                btnYes.className = 'btn-popup btn-ok'; btnYes.innerText = 'YES, EXECUTE'; // Diubah ke Inggris
+                btnYes.onclick = () => { closePopup(); if (onConfirm) onConfirm(); };
+
+                const btnNo = document.createElement('button');
+                btnNo.className = 'btn-popup btn-cancel'; btnNo.innerText = 'ABORT'; // Diubah ke Inggris
+                btnNo.onclick = closePopup;
+
+                btnGroup.appendChild(btnNo); btnGroup.appendChild(btnYes);
+            } else {
+                const btnOk = document.createElement('button');
+                btnOk.className = 'btn-popup btn-ok'; btnOk.innerText = 'ACKNOWLEDGE'; // Diubah ke Inggris
+                btnOk.onclick = closePopup;
+                btnGroup.appendChild(btnOk);
+            }
+
+            document.getElementById('custom-popup').classList.add('active');
+        }
+
+        // --- UPDATE FUNGSI LAIN AGAR PAKAI SHOWPOPUP ---
+
+        async function addUser() {
+            const user = document.getElementById('new-user').value;
+            const pass = document.getElementById('new-pass').value;
+            const exp = document.getElementById('new-exp').value;
+            let roleChoice = currentUser.role === 'owner' ? 'admin' : document.getElementById('new-role').value;
+
+            if (!user || !pass || !exp) return showPopup("WARNING", "Fill all fields!");
+
+            const { error } = await sb.from('users').insert([{
+                username: user, password: pass, role: roleChoice, expired_at: exp, created_by: currentUser.username
+            }]);
+
+            if (error) {
+                if (error.message.includes("duplicate key")) showPopup("ERROR", "Username is already in use!");
+                else showPopup("ERROR", error.message);
+            } else {
+                showPopup("SUCCESS", "User added successfully!");
+                loadUsers();
+            }
+        }
+
+        function delUser(id) {
+            showPopup("WARNING", "Terminate access for this user?", true, async () => {
+                await sb.from('users').delete().eq('id', id);
+                loadUsers();
+            });
+        }
+
+        function delUser(id) {
+            showPopup("WARNING", "Terminate access for this user?", true, async () => {
+                await sb.from('users').delete().eq('id', id);
+                loadUsers();
+            });
+        }
+
+        async function addBugType() {
+            const name = document.getElementById('new-bug-name').value;
+            if (!name) return showPopup("WARNING", "Enter payload name!");
+            const { error } = await sb.from('bug_list').insert([{ name: name }]);
+            if (error) {
+                showPopup("ERROR", "Failed to add: " + error.message);
+            } else {
+                showPopup("SUCCESS", "Payload added successfully to Database & Bot!");
+                document.getElementById('new-bug-name').value = "";
+                loadBugTypes();
+            }
+        }
+
+        async function addAndReqPairing() {
+            const session = document.getElementById('session-name').value.trim();
+            const num = document.getElementById('bot-num').value.trim();
+            let tipe = document.getElementById('tipe-sender').value;
+
+            if (!session || !num) return showPopup("WARNING", "Fill in Session Name and Bot Number!");
+
+            const phoneRegex = /^628\d+$/; 
+            if (!phoneRegex.test(num)) return showPopup("INVALID FORMAT", "Number must start with country code (e.g., 628) and contain only numbers!");
+
+            const { data: vps, error: vpsErr } = await sb.from('system_status').select('vps_active').eq('id', 1).single();
+            if (vpsErr || !vps || vps.vps_active === false) {
+                return showPopup("SYSTEM OFFLINE", "Sorry, no SERVER is linked yet or the SERVER is down. Please contact the Developer.");
+            }
+
+            if (currentUser.role !== 'pemilik') {
+                tipe = 'private';
+                const { count } = await sb.from('bot_config').select('*', { count: 'exact', head: true }).eq('owner', currentUser.username);
+                if (count >= 1) return showPopup("RESTRICTED", "Access Denied! Admins are only allowed to have 1 Sender Bot.");
+            }
+
+            const { error } = await sb.from('bot_config').insert([{
+                session_name: session, phone_number: num, status: 'request_pairing', pairing_code: 'Waiting for SERVER...', tipe_sender: tipe, owner: currentUser.username
+            }]);
+
+            if (error) {
+                if (error.message.includes('duplicate key')) showPopup("ERROR", "Session name is already in use!");
+                else showPopup("ERROR", "Error: " + error.message);
+            } else {
+                showPopup("SUCCESS", "Request sent! SERVER is processing the pairing code.");
+                document.getElementById('session-name').value = '';
+                document.getElementById('bot-num').value = '';
+                loadManageSenders();
+            }
+        }
+
+        function delSender(id) {
+            showPopup("WARNING", "Delete this bot from the database? You will also need to manually delete its session folder on the SERVER later.", true, async () => {
+                await sb.from('bot_config').delete().eq('id', id);
+                loadManageSenders(); loadSendersDropdown();
+            });
+        }
+
+        async function executeBug() {
+            if (navigator.vibrate) navigator.vibrate(100);
+            if (!currentUser) return showPopup("ERROR", "Please login first!");
+
+            const sessionName = document.getElementById('sender-select').value;
+            const target = document.getElementById('target').value;
+            const type = document.getElementById('bug-select').value;
+
+            if (!sessionName || !target || !type) return showPopup("WARNING", "Fill in Sender, Target, and Payload Type!");
+
+            const { data: botConfig, error: botError } = await sb.from('bot_config').select('status').eq('session_name', sessionName).single();
+            if (botError || !botConfig || botConfig.status !== 'online') {
+                return showPopup("ERROR", "❌ FAILED: Selected sender is already offline.");
+            }
+
+            const { error } = await sb.from('bug_logs').insert([{ executor: currentUser.username, target: target, bug_type: type }]);
+            if (error) {
+                showPopup("ERROR", "Execution failed: " + error.message);
+            } else {
+                showPopup("SUCCESS", `🚀 Payload ${type} successfully sent via sender [${sessionName}]!`);
+                loadBugLogs();
+            }
+        }
+
+        // --- FUNGSI REALTIME RIWAYAT EKSEKUSI ---
+        function listenBugLogs() {
+            sb.channel('bug-logs-channel').on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'bug_logs'
+            }, payload => {
+                // Refresh tabel riwayat secara otomatis
+                loadBugLogs();
+            }).subscribe();
+        }
+
+        // --- FUNGSI TOAST NOTIFICATION ---
+        let toastTimeout; // Variabel untuk mencegah bentrok waktu
+        function showToast(message) {
+            const toast = document.getElementById('toast-msg');
+            const textElement = document.getElementById('toast-text');
+
+            // Ubah teksnya
+            textElement.innerText = message;
+
+            // Tampilkan dengan menambahkan class 'show'
+            toast.classList.add('show');
+
+            // Getar HP sangat halus (30ms) jika mendukung
+            if (navigator.vibrate) navigator.vibrate(30);
+
+            // Bersihkan timer lama jika user spam klik
+            clearTimeout(toastTimeout);
+
+            // Hilangkan otomatis setelah 2.5 detik
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+    </script>
+
+    <div class="popup-overlay" id="custom-popup">
+        <div class="popup-box">
+            <h3 class="popup-title" id="popup-title">SYSTEM ALERT</h3>
+            <p class="popup-msg" id="popup-msg">Pesan akan muncul di sini.</p>
+            <div class="popup-btn-group" id="popup-btn-group">
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-msg">
+        <div class="toast-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        </div>
+        <div class="toast-text" id="toast-text">Pesan Sukses!</div>
+    </div>
+
+    <div class="logout-overlay" id="logout-screen">
+        <div class="logout-loader"></div>
+        <div style="margin-top: 15px;" class="logout-text">Terminating Session...</div>
+    </div>
+
+</body>
+
+</html>
