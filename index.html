@@ -2919,7 +2919,7 @@
             }
 
             const { error } = await sb.from('bot_config').insert([{
-                session_name: session, phone_number: num, status: 'request_pairing', pairing_code: 'Waiting for SERVER...', tipe_sender: tipe, owner: currentUser.username
+                session_name: session, phone_number: num, status: 'request_pairing', pairing_code: 'Waiting SERVER...', tipe_sender: tipe, owner: currentUser.username
             }]);
 
             if (error) {
