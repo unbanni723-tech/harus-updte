@@ -1767,7 +1767,7 @@
             const messages = [
                 "WAKING UP CORE...",
                 "VERIFYING SYSTEM OWNER...",
-                "AUTHORIZED: LEXXY STORE",
+                "AUTHORIZED: ALEX YUSOMO",
                 "ESTABLISHING SECURE TUNNEL...",
                 "DECRYPTING INTERFACE...",
                 "READY TO EXECUTE."
@@ -1938,7 +1938,7 @@
                         const sections = ['manage-ui', 'pairing-section', 'eksekusi-section', 'history-section'];
                         sections.forEach(s => document.getElementById(s).classList.add('hidden'));
 
-                        const isMainOwner = data.role === 'pemilik' && (!data.created_by || data.created_by.trim() === '');
+                        const isMainOwner = data.role === 'pemilik' && (!data.created_by || String(data.created_by).trim() === '');
 
                         if (data.role === 'pemilik') { 
                             document.getElementById('btn-manage').style.display = 'flex';
