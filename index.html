@@ -2242,7 +2242,7 @@
 
                 setTimeout(() => {
                     const welcomeOverlay = document.getElementById('welcome-overlay');
-                    document.getElementById('welcome-user').innerText = `WELCOME BACK, ${String(data.username).toUpperCase()}`;
+                    document.getElementById('welcome-user').innerText = `WELCOME ${String(data.username).toUpperCase()}`;
 
                     if (welcomeOverlay) welcomeOverlay.classList.add('active');
 
