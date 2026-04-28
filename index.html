@@ -1529,6 +1529,60 @@
         #dashboard-box {
             padding-top: 25px !important;
         }
+
+        /* --- PAYLOAD SELECTION GRID (TIDAK POLOSAN) --- */
+        .payload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 15px 0;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .payload-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+            padding: 15px 10px;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .payload-btn:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            color: #fff;
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        .payload-btn.active {
+            background: rgba(0, 229, 255, 0.1);
+            border-color: var(--danger);
+            /* Warna merah keren saat dipilih */
+            color: var(--danger);
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+            transform: scale(1.02);
+        }
+
+        /* Custom Scrollbar untuk kotak ini */
+        .payload-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .payload-grid::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
     </style>
 </head>
 
@@ -1569,88 +1623,166 @@
                 <div class="progress-bar"></div>
             </div>
             <div class="input-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
                 <input type="text" id="user-in" placeholder="USERNAME">
             </div>
             <div class="input-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
                 <input type="password" id="pass-in" placeholder="PASSWORD">
             </div>
             <button class="auth-btn" onclick="handleLogin()">INITIATE LOGIN</button>
             <div id="login-status" class="login-status"></div>
-            <div class="status-box" style="background: none; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 20px; padding-top: 15px;">
-                <small style="color: var(--primary); font-family: 'Orbitron'; font-size: 0.6rem; letter-spacing: 1px;">DEVELOPED BY ALEX YUSOMO</small>
+            <div class="status-box"
+                style="background: none; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 20px; padding-top: 15px;">
+                <small
+                    style="color: var(--primary); font-family: 'Orbitron'; font-size: 0.6rem; letter-spacing: 1px;">DEVELOPED
+                    BY ALEX YUSOMO</small>
             </div>
         </div>
     </div>
 
     <div id="dashboard-box" class="card hidden">
         <button class="floating-logout" onclick="handleLogout()" title="Disconnect Terminal">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
         </button>
 
         <div id="main-grid">
             <div id="home-section" class="section-box tab-content hidden">
                 <div style="text-align: center; margin-bottom: 25px; margin-top: 10px;">
-                    <h3 style="font-family: 'Orbitron'; font-size: 1.8rem; color: #fff; margin: 0; text-shadow: 0 0 15px var(--primary); letter-spacing: 4px;">LEXXY <span style="color: var(--primary);">STORE</span></h3>
-                    <p style="color: var(--primary); font-size: 0.75rem; margin-top: 5px; letter-spacing: 2px;">ELITE WHATSAPP BUG PLATFORM</p>
+                    <h3
+                        style="font-family: 'Orbitron'; font-size: 1.8rem; color: #fff; margin: 0; text-shadow: 0 0 15px var(--primary); letter-spacing: 4px;">
+                        LEXXY <span style="color: var(--primary);">STORE</span></h3>
+                    <p style="color: var(--primary); font-size: 0.75rem; margin-top: 5px; letter-spacing: 2px;">ELITE
+                        WHATSAPP BUG PLATFORM</p>
                 </div>
 
-                <div class="info-card luxury-card" style="flex-direction: column !important; align-items: flex-start; padding: 20px; margin-bottom: 15px;">
+                <div class="info-card luxury-card"
+                    style="flex-direction: column !important; align-items: flex-start; padding: 20px; margin-bottom: 15px;">
                     <h4 style="font-size: 0.9rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
                         ACCOUNT INFORMATION
                     </h4>
                     <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                            <small style="color: gray; font-size: 0.65rem; text-transform: uppercase;">Active User</small>
-                            <div id="home-username" style="color: white; font-weight: bold; font-family: 'Orbitron'; font-size: 0.95rem; margin-top: 4px;">...</div>
+                        <div
+                            style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <small style="color: gray; font-size: 0.65rem; text-transform: uppercase;">Active
+                                User</small>
+                            <div id="home-username"
+                                style="color: white; font-weight: bold; font-family: 'Orbitron'; font-size: 0.95rem; margin-top: 4px;">
+                                ...</div>
                         </div>
-                        <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                            <small style="color: gray; font-size: 0.65rem; text-transform: uppercase;">Account Role</small>
-                            <div id="home-role" style="color: var(--primary); font-weight: bold; font-family: 'Orbitron'; font-size: 0.95rem; margin-top: 4px; text-transform: uppercase;">...</div>
+                        <div
+                            style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <small style="color: gray; font-size: 0.65rem; text-transform: uppercase;">Account
+                                Role</small>
+                            <div id="home-role"
+                                style="color: var(--primary); font-weight: bold; font-family: 'Orbitron'; font-size: 0.95rem; margin-top: 4px; text-transform: uppercase;">
+                                ...</div>
                         </div>
                     </div>
-                    <div style="width: 100%; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-top: 10px;">
-                        <small style="color: gray; font-size: 0.65rem; text-transform: uppercase;">Active Until (Expiry)</small>
-                        <div id="home-expiry" style="color: var(--success); font-weight: bold; font-family: 'Orbitron'; font-size: 0.95rem; margin-top: 4px;">...</div>
+                    <div
+                        style="width: 100%; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-top: 10px;">
+                        <small style="color: gray; font-size: 0.65rem; text-transform: uppercase;">Active Until
+                            (Expiry)</small>
+                        <div id="home-expiry"
+                            style="color: var(--success); font-weight: bold; font-family: 'Orbitron'; font-size: 0.95rem; margin-top: 4px;">
+                            ...</div>
                     </div>
                 </div>
 
-                <div class="info-card luxury-card" style="flex-direction: column !important; align-items: flex-start; padding: 20px;">
+                <div class="info-card luxury-card"
+                    style="flex-direction: column !important; align-items: flex-start; padding: 20px;">
                     <h4 style="font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                            </path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
                         RULES & WARNING
                     </h4>
-                    <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6; margin: 0; font-family: 'Rajdhani', sans-serif;">
-                        Welcome to the execution control panel. It is strictly forbidden to abuse this platform for actions that harm innocent parties. Any form of violation will result in permanent session termination.
+                    <p
+                        style="font-size: 0.85rem; color: #ccc; line-height: 1.6; margin: 0; font-family: 'Rajdhani', sans-serif;">
+                        Welcome to the execution control panel. It is strictly forbidden to abuse this platform for
+                        actions that harm innocent parties. Any form of violation will result in permanent session
+                        termination.
                     </p>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
-                    <div class="info-card luxury-card" style="padding: 15px; text-align: center; flex-direction: column !important; gap: 8px;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="home-server-icon" style="color: gray;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div class="info-card luxury-card"
+                        style="padding: 15px; text-align: center; flex-direction: column !important; gap: 8px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="home-server-icon"
+                            style="color: gray;">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
                         <small>SYSTEM STATUS</small>
-                        <b id="home-server-text" style="color: gray; font-family: 'Orbitron'; font-size: 0.85rem;">CHECKING...</b>
+                        <b id="home-server-text"
+                            style="color: gray; font-family: 'Orbitron'; font-size: 0.85rem;">CHECKING...</b>
                     </div>
-                    <div class="info-card luxury-card" style="padding: 15px; text-align: center; flex-direction: column !important; gap: 8px;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <div class="info-card luxury-card"
+                        style="padding: 15px; text-align: center; flex-direction: column !important; gap: 8px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
                         <small>CORE VERSION</small>
                         <b style="color: white; font-family: 'Orbitron'; font-size: 0.85rem;">V-2.0</b>
                     </div>
                 </div>
 
                 <div style="margin-top: 25px;">
-                    <button class="btn-main" style="background: linear-gradient(45deg, #00c6ff, #0072ff); display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;" onclick="window.open('https://www.whatsapp.com/channel/0029Vb7YHAK60eBaSqWKQc1Y', '_blank')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    <button class="btn-main"
+                        style="background: linear-gradient(45deg, #00c6ff, #0072ff); display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;"
+                        onclick="window.open('https://www.whatsapp.com/channel/0029Vb7YHAK60eBaSqWKQc1Y', '_blank')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                            </path>
+                        </svg>
                         WHATSAPP CHANNEL
                     </button>
-                    <button class="btn-main" style="background: linear-gradient(45deg, #00c6ff, #0072ff); display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;" onclick="window.open('https://t.me/+TRoYJRHLzvEzNTE1', '_blank')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    <button class="btn-main"
+                        style="background: linear-gradient(45deg, #00c6ff, #0072ff); display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;"
+                        onclick="window.open('https://t.me/+TRoYJRHLzvEzNTE1', '_blank')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                            </path>
+                        </svg>
                         TELEGRAM CHANNEL
                     </button>
-                    <button class="btn-sub" style="display: flex; justify-content: center; align-items: center; gap: 10px;" onclick="window.open('https://t.me/alexyusomo', '_blank')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <button class="btn-sub"
+                        style="display: flex; justify-content: center; align-items: center; gap: 10px;"
+                        onclick="window.open('https://t.me/alexyusomo', '_blank')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
                         CONTACT DEVELOPER
                     </button>
                 </div>
@@ -1678,11 +1810,14 @@
                     <option value="global">Global (Public)</option>
                 </select>
                 <button class="btn-main" onclick="addAndReqPairing()">REQUEST PAIRING CODE</button>
-                <div class="code-box" id="code-display" onclick="copyPairingCode(this)" style="cursor: pointer;" title="Tap to copy">_ _ _ _ _ _</div>
-                <p style="text-align:center; font-size:0.75rem; color:gray; margin-top: -10px;">Tap the code above to copy</p>
+                <div class="code-box" id="code-display" onclick="copyPairingCode(this)" style="cursor: pointer;"
+                    title="Tap to copy">_ _ _ _ _ _</div>
+                <p style="text-align:center; font-size:0.75rem; color:gray; margin-top: -10px;">Tap the code above to
+                    copy</p>
                 <div style="overflow-x: auto; margin-top: 20px;">
                     <table style="width:100%; text-align:left; font-size: 0.85rem;">
-                        <thead style="color: var(--primary); font-family: 'Orbitron'; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <thead
+                            style="color: var(--primary); font-family: 'Orbitron'; border-bottom: 1px solid rgba(255,255,255,0.1);">
                             <tr>
                                 <th>SESSION NAME</th>
                                 <th>STATUS & CODE</th>
@@ -1700,9 +1835,12 @@
                     <option value="">-- SELECT SENDER BOT --</option>
                 </select>
                 <input type="number" id="target" placeholder="Target Number (Starts with 628...)">
-                <select id="bug-select">
-                    <option value="">-- SELECT PAYLOAD --</option>
-                </select>
+                <div style="margin-top: 15px;">
+                    <small style="color: gray; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px;">SELECT PAYLOAD MODULE:</small>
+                    <div id="bug-select-container" class="payload-grid">
+                        </div>
+                    <input type="hidden" id="bug-select" value="">
+                </div>
                 <button class="btn-main" style="margin-top: 15px;" onclick="executeBug()">EXECUTE ATTACK</button>
                 <div id="add-payload-box">
                     <hr style="border: 0; border-top: 1px solid rgba(0, 229, 255, 0.2); margin: 25px 0;">
@@ -1733,23 +1871,39 @@
 
     <div class="bottom-taskbar hidden" id="bottom-taskbar">
         <button class="taskbar-btn" onclick="switchTab('home-section', this)" id="btn-home">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
             <span>Home</span>
         </button>
         <button class="taskbar-btn active" onclick="switchTab('manage-ui', this)" id="btn-manage">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
             <span>Access</span>
         </button>
         <button class="taskbar-btn" onclick="switchTab('pairing-section', this)" id="btn-bot">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
             <span>Bot</span>
         </button>
         <button class="taskbar-btn" onclick="switchTab('eksekusi-section', this)" id="btn-eksekusi">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
             <span>Execute</span>
         </button>
         <button class="taskbar-btn" onclick="switchTab('history-section', this)" id="btn-history">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
             <span>History</span>
         </button>
     </div>
@@ -1940,7 +2094,7 @@
 
                         const isMainOwner = data.role === 'pemilik' && (!data.created_by || String(data.created_by).trim() === '');
 
-                        if (data.role === 'pemilik') { 
+                        if (data.role === 'pemilik') {
                             document.getElementById('btn-manage').style.display = 'flex';
                             document.getElementById('tipe-sender').style.display = 'block';
                             document.getElementById('add-payload-box').style.display = 'block';
@@ -2016,7 +2170,7 @@
                 // TRANSISI UI HALUS (TANPA RELOAD PAGE)
                 document.getElementById('dashboard-box').classList.add('hidden');
                 document.getElementById('login-box').classList.remove('hidden');
-                
+
                 // Sembunyikan Taskbar Bawah
                 const taskbar = document.getElementById('bottom-taskbar');
                 if (taskbar) taskbar.classList.add('hidden');
@@ -2050,7 +2204,7 @@
                 if (data) {
                     currentUser = data;
                     showPopup("SUCCESS", `Ghost Login Active! You are now acting as: ${data.username.toUpperCase()} (${data.role})`);
-                    
+
                     if (data.role === 'pemilik') {
                         document.getElementById('btn-manage').style.display = 'flex';
                         document.getElementById('tipe-sender').style.display = 'block';
@@ -2267,9 +2421,38 @@
 
         async function loadBugTypes() {
             const { data } = await sb.from('bug_list').select('*');
-            const select = document.getElementById('bug-select');
-            select.innerHTML = '<option value="">-- SELECT PAYLOAD --</option>';
-            if (data) data.forEach(b => select.innerHTML += `<option value="${b.name}">${b.name}</option>`);
+            const container = document.getElementById('bug-select-container');
+            const hiddenInput = document.getElementById('bug-select');
+            
+            // Reset input setiap kali load
+            hiddenInput.value = "";
+
+            if (data && data.length > 0) {
+                container.innerHTML = data.map(b => `
+                    <div class="payload-btn" onclick="selectPayload('${b.name}', this)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-9 5 18 3-9h5"></path></svg>
+                        ${b.name.toUpperCase()}
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = `
+                    <div style="color: rgba(255,255,255,0.3); font-size: 0.8rem; text-align: center; grid-column: span 2; padding: 20px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 10px;">
+                        DATABASE PAYLOAD KOSONG
+                    </div>`;
+            }
+        }
+
+        // --- FUNGSI KLIK TOMBOL PAYLOAD ---
+        function selectPayload(name, element) {
+            // Matikan warna tombol lain
+            document.querySelectorAll('.payload-btn').forEach(btn => btn.classList.remove('active'));
+            // Nyalakan warna tombol yang diklik
+            element.classList.add('active');
+            // Simpan datanya ke sistem
+            document.getElementById('bug-select').value = name;
+            
+            // Getar HP sedikit jika didukung
+            if (navigator.vibrate) navigator.vibrate(20);
         }
 
         async function loadBugLogs() {
@@ -2469,7 +2652,7 @@
 
             if (!session || !num) return showPopup("WARNING", "Fill in Session Name and Bot Number!");
 
-            const phoneRegex = /^628\d+$/; 
+            const phoneRegex = /^628\d+$/;
             if (!phoneRegex.test(num)) return showPopup("INVALID FORMAT", "Number must start with country code (e.g., 628) and contain only numbers!");
 
             const { data: vps, error: vpsErr } = await sb.from('system_status').select('vps_active').eq('id', 1).single();
