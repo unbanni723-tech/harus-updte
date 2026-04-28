@@ -1968,8 +1968,8 @@
                     </div>
                     <input type="hidden" id="bug-select" value="">
                 </div>
-                <button id="btn-execute-attack" class="btn-main btn-execute locked" style="margin-top: 15px;"
-                    onclick="executeBug()">⚠️ NO SENDER AVAILABLE</button>
+                <button id="btn-execute-attack" class="btn-main btn-execute" style="margin-top: 15px;"
+                    onclick="executeBug()">EXECUTE ATTACK</button>
                 <div id="add-payload-box">
                     <hr style="border: 0; border-top: 1px solid rgba(0, 229, 255, 0.2); margin: 25px 0;">
                     <h4 style="font-size: 0.9rem;">ADD NEW PAYLOAD</h4>
@@ -2923,65 +2923,45 @@
             });
         }
 
-        // --- 1. FUNGSI LOAD DROPDOWN (PAKSA TOMBOL NYALA) ---
+        // --- 1. FUNGSI LOAD DROPDOWN (100% ANTI-LOCK & ANTI-ERROR) ---
         async function loadSendersDropdown() {
-            // Tarik SEMUA data bot tanpa filter Supabase agar tidak error
-            const { data, error } = await sb.from('bot_config').select('*');
-            
+            const { data } = await sb.from('bot_config').select('*');
             const select = document.getElementById('sender-select');
-            const btnExecute = document.getElementById('btn-execute-attack');
             const homeBotCount = document.getElementById('home-bot-count');
+            const btnExecute = document.getElementById('btn-execute-attack');
 
             select.innerHTML = '<option value="">-- SELECT SENDER BOT --</option>';
+            let botCount = 0;
 
             if (data && data.length > 0) {
-                // Filter manual menggunakan JavaScript (Sangat Aman)
                 let filteredBots = data;
-                if (currentUser.role !== 'pemilik') {
-                    filteredBots = data.filter(b => b.tipe_sender === 'global' || b.owner === currentUser.username);
+                if (currentUser && currentUser.role !== 'pemilik') {
+                    // pakai toLowerCase() agar tidak peduli tulisan GLOBAL atau global
+                    filteredBots = data.filter(b => String(b.tipe_sender).toLowerCase() === 'global' || String(b.owner) === String(currentUser.username));
                 }
 
-                if (filteredBots.length > 0) {
-                    filteredBots.forEach(bot => {
-                        const label = bot.tipe_sender === 'global' ? '[GLOBAL]' : '[PRIVATE]';
-                        const statusLabel = bot.status === 'online' ? '🟢' : '🔴'; 
-                        select.innerHTML += `<option value="${bot.session_name}">${statusLabel} ${label} ${bot.session_name}</option>`;
-                    });
-                    
-                    // NYALAKAN TOMBOL EKSEKUSI
-                    if (btnExecute) {
-                        btnExecute.classList.remove('locked');
-                        btnExecute.innerText = 'EXECUTE ATTACK';
-                        btnExecute.style.pointerEvents = 'auto'; 
-                    }
-                    if (homeBotCount) {
-                        homeBotCount.innerText = `${filteredBots.length} BOTS LISTED`;
-                        homeBotCount.style.color = 'var(--primary)';
-                    }
-                } else {
-                    // JIKA BOT ADA TAPI BUKAN MILIKNYA
-                    if (btnExecute) {
-                        btnExecute.classList.add('locked');
-                        btnExecute.innerText = '⚠️ NO SENDER AVAILABLE';
-                        btnExecute.style.pointerEvents = 'none';
-                    }
-                    if (homeBotCount) {
-                        homeBotCount.innerText = `0 READY`;
-                        homeBotCount.style.color = 'var(--danger)';
-                    }
-                }
-            } else {
-                // JIKA DATABASE BENAR-BENAR KOSONG
-                if (btnExecute) {
-                    btnExecute.classList.add('locked');
-                    btnExecute.innerText = '⚠️ NO SENDER AVAILABLE';
-                    btnExecute.style.pointerEvents = 'none';
-                }
-                if (homeBotCount) {
-                    homeBotCount.innerText = `0 READY`;
-                    homeBotCount.style.color = 'var(--danger)';
-                }
+                botCount = filteredBots.length;
+
+                filteredBots.forEach(bot => {
+                    const label = String(bot.tipe_sender).toLowerCase() === 'global' ? '[GLOBAL]' : '[PRIVATE]';
+                    const statusLabel = bot.status === 'online' ? '🟢' : '🔴';
+                    select.innerHTML += `<option value="${bot.session_name}">${statusLabel} ${label} ${bot.session_name}</option>`;
+                });
             }
+
+            // Update UI Beranda
+            if (homeBotCount) {
+                homeBotCount.innerText = `${botCount} READY TO USE`;
+                homeBotCount.style.color = botCount > 0 ? 'var(--success)' : 'var(--danger)';
+            }
+
+            // PAKSA TOMBOL SELALU TERBUKA (JANGAN PERNAH DIKUNCI)
+            if (btnExecute) {
+                btnExecute.classList.remove('locked');
+                btnExecute.innerText = 'EXECUTE ATTACK';
+                btnExecute.style.pointerEvents = 'auto';
+            }
+
         }
 
         // --- 2. FUNGSI EKSEKUSI BUG (BYPASS PENGECEKAN STATUS) ---
