@@ -2401,10 +2401,10 @@
 
         function copyPairingCode(element) {
             const text = element.innerText;
-            if (text && text !== "_ _ _ _ _ _" && text !== "Menunggu SERVER...") {
+            if (text && text !== "_ _ _ _ _ _" && text !== "Waiting SERVER...") {
                 navigator.clipboard.writeText(text).then(() => {
                     // GANTI POPUP DENGAN TOAST YANG BARU DIBUAT
-                    showToast(`Kode [ ${text} ] disalin!`);
+                    showToast(`Code [ ${text} ] copied!`);
                 });
             }
         }
@@ -2581,7 +2581,7 @@
         }
 
         async function resetBotConfig() {
-            showPopup("WARNING", "Reset koneksi bot? Ini akan menghapus sesi lama agar Anda bisa input nomor baru.", true, async () => {
+            showPopup("WARNING", "Reset bot connection? This will delete the old session to allow new number input.", true, async () => {
                 // Update database agar kembali ke status awal
                 const { error } = await sb.from('bot_config')
                     .update({
@@ -2592,11 +2592,11 @@
                     .eq('id', 1);
 
                 if (!error) {
-                    showPopup("SUCCESS", "Database di-reset. Silakan hapus folder 'auth_info_baileys' di SERVER dan jalankan ulang bot.");
+                    showPopup("SUCCESS", "Database reset successful. Please manually delete the session folder on the SERVER.");
                     document.getElementById('code-display').innerText = "_ _ _ _ _ _";
                     if (document.getElementById('bot-num')) document.getElementById('bot-num').value = "";
                 } else {
-                    showPopup("ERROR", "Gagal mereset database: " + error.message);
+                    showPopup("ERROR", "Failed to reset database: " + error.message);
                 }
             });
         }
@@ -2619,7 +2619,7 @@
             } else {
                 container.innerHTML = `
                     <div style="color: rgba(255,255,255,0.3); font-size: 0.8rem; text-align: center; grid-column: span 2; padding: 20px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 10px;">
-                        DATABASE PAYLOAD KOSONG
+                        PAYLOAD DATABASE EMPTY
                     </div>`;
             }
         }
@@ -2707,7 +2707,7 @@
                             <span style="color: ${statusColor}; font-size: 0.8rem;">● ${bot.status.toUpperCase()}</span><br>
                             <b style="color: var(--primary); letter-spacing: 2px;">${bot.pairing_code || '-'}</b>
                         </td>
-                        <td><button onclick="delSender(${bot.id})" class="btn-danger" style="padding: 6px; font-size: 0.7rem;">Hapus</button></td>
+                        <td><button onclick="delSender(${bot.id})" class="btn-danger" style="padding: 6px; font-size: 0.7rem;">Delete</button></td>
                     </tr>
                     `;
                 }).join('');
@@ -2794,13 +2794,13 @@
         function toggleBotType(id, currentType) {
             const newType = currentType === 'global' ? 'private' : 'global';
             const msg = newType === 'global'
-                ? "Jadikan bot ini GLOBAL? Semua user akan bisa memakai bot ini untuk eksekusi."
-                : "Jadikan bot ini PRIVATE? Hanya owner aslinya yang bisa memakainya.";
+                ? "Make this bot GLOBAL? All users will be able to use it for execution."
+                : "Make this bot PRIVATE? Only the original owner can use it.";
 
             showPopup("KONFIRMASI AKSES", msg, true, async () => {
                 const { error } = await sb.from('bot_config').update({ tipe_sender: newType }).eq('id', id);
                 if (!error) {
-                    showToast(`Bot berhasil diubah menjadi ${newType.toUpperCase()}`);
+                    showToast(`Bot successfully changed to${newType.toUpperCase()}`);
                     loadManageSenders();
                     loadSendersDropdown();
                     if (typeof loadGlobalBotManager === "function") loadGlobalBotManager();
@@ -3067,7 +3067,7 @@
     <div class="popup-overlay" id="custom-popup">
         <div class="popup-box">
             <h3 class="popup-title" id="popup-title">SYSTEM ALERT</h3>
-            <p class="popup-msg" id="popup-msg">Pesan akan muncul di sini.</p>
+            <p class="popup-msg" id="popup-msg">Messages will appear here.</p>
             <div class="popup-btn-group" id="popup-btn-group">
             </div>
         </div>
