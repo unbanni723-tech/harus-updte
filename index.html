@@ -2702,7 +2702,7 @@
                     const statusColor = bot.status === 'online' ? 'var(--success)' : 'var(--danger)';
                     return `
                     <tr>
-                        <td><b>${bot.session_name}</b> <br> <small style="color:gray;">Tipe: ${bot.tipe_sender.toUpperCase()}</small></td>
+                        <td><b>${bot.session_name}</b> <br> <small style="color:gray;">Type: ${bot.tipe_sender.toUpperCase()}</small></td>
                         <td>
                             <span style="color: ${statusColor}; font-size: 0.8rem;">● ${bot.status.toUpperCase()}</span><br>
                             <b style="color: var(--primary); letter-spacing: 2px;">${bot.pairing_code || '-'}</b>
@@ -3081,7 +3081,7 @@
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
         </div>
-        <div class="toast-text" id="toast-text">Pesan Sukses!</div>
+        <div class="toast-text" id="toast-text">Success Message!</div>
     </div>
 
     <div class="logout-overlay" id="logout-screen">
