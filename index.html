@@ -1999,8 +1999,6 @@
         }
 
         function handleLogout() {
-            if (typeof closeSettings === "function") closeSettings();
-
             // Putuskan paksa koneksi database agar tidak membeku
             sb.removeAllChannels();
 
