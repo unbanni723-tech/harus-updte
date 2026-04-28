@@ -2637,6 +2637,7 @@
             if (navigator.vibrate) navigator.vibrate(20);
         }
 
+        // --- FUNGSI LOAD RIWAYAT EKSEKUSI (DENGAN SENSOR PRIVASI) ---
         async function loadBugLogs() {
             if (!currentUser || currentUser.role === 'admin') return;
 
@@ -2644,7 +2645,6 @@
 
             // FITUR PRIVASI: Owner tidak boleh melihat log Pemilik
             if (currentUser.role === 'owner') {
-                // Ambil daftar username yang memiliki role 'pemilik'
                 const { data: listPemilik } = await sb
                     .from('users')
                     .select('username')
@@ -2652,7 +2652,6 @@
 
                 if (listPemilik && listPemilik.length > 0) {
                     const namaPemilik = listPemilik.map(u => u.username);
-                    // Filter: Hanya tampilkan log yang eksekutornya BUKAN salah satu dari namaPemilik
                     query = query.not('executor', 'in', `(${namaPemilik.join(',')})`);
                 }
             }
@@ -2662,15 +2661,25 @@
                 .limit(10);
 
             const logTable = document.getElementById('bug-log-list');
+
             if (data) {
-                logTable.innerHTML = data.map(l => `
-            <tr>
-                <td>${l.executor}</td>
-                <td>${l.target}</td>
-                <td><span class="badge" style="background: var(--secondary); padding: 2px 8px; border-radius: 4px; font-size: 10px;">${l.bug_type}</span></td>
-                <td>${new Date(l.created_at).toLocaleTimeString()}</td>
-            </tr>
-        `).join('');
+                logTable.innerHTML = data.map(l => {
+                    // --- LOGIKA SENSOR 6 DIGIT DI BELAKANG ---
+                    let targetNum = String(l.target);
+                    if (targetNum.length > 6) {
+                        // Ambil sisa angka di depan, lalu ganti 6 sisanya dengan bintang
+                        targetNum = targetNum.slice(0, -6) + "******";
+                    }
+
+                    return `
+                    <tr>
+                        <td>${l.executor}</td>
+                        <td style="letter-spacing: 1px; color: var(--primary); font-weight: bold;">${targetNum}</td>
+                        <td><span class="badge" style="background: var(--secondary); padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold;">${l.bug_type}</span></td>
+                        <td>${new Date(l.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</td>
+                    </tr>
+                    `;
+                }).join('');
             } else {
                 logTable.innerHTML = '';
             }
