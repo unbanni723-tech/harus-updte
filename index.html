@@ -2222,19 +2222,6 @@
             document.getElementById('settings-slider').classList.remove('active');
         }
 
-        // --- UPDATE UI SERVER KE DALAM PANEL GESER ---
-        function updateServerUI(isOnline) {
-            const badge = document.getElementById('slide-server-badge');
-            const text = document.getElementById('slide-server-text');
-            if (isOnline) {
-                badge.className = "server-status online";
-                text.innerText = "SERVER ONLINE";
-            } else {
-                badge.className = "server-status offline";
-                text.innerText = "SERVER OFFLINE";
-            }
-        }
-
         // --- CEK STATUS SERVER (VPS) ---
         async function checkServerStatus() {
             const { data, error } = await sb.from('system_status').select('vps_active').eq('id', 1).single();
