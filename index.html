@@ -2728,54 +2728,6 @@
             }
         }
 
-        // --- 4. Fungsi Load Dropdown di Menu Eksekusi ---
-        // --- 4. Fungsi Load Dropdown di Menu Eksekusi ---
-        // --- FUNGSI LOAD DROPDOWN & KONTROL TOMBOL EKSEKUSI ---
-        async function loadSendersDropdown() {
-            let query = sb.from('bot_config').select('*').eq('status', 'online');
-
-            if (currentUser.role !== 'pemilik') {
-                query = query.or(`tipe_sender.eq.global,owner.eq.${currentUser.username}`);
-            }
-
-            const { data } = await query;
-            const select = document.getElementById('sender-select');
-            const btnExecute = document.getElementById('btn-execute-attack');
-            const homeBotCount = document.getElementById('home-bot-count');
-
-            select.innerHTML = '<option value="">-- SELECT SENDER BOT --</option>';
-
-            if (data && data.length > 0) {
-                // JIKA ADA BOT TERSEDIA: Masukkan ke dropdown & Nyalakan Tombol Eksekusi
-                data.forEach(bot => {
-                    const label = bot.tipe_sender === 'global' ? '[GLOBAL]' : '[PRIVATE]';
-                    select.innerHTML += `<option value="${bot.session_name}">${label} ${bot.session_name} (${bot.owner})</option>`;
-                });
-
-                // Ubah tombol jadi warna normal dan bisa diklik
-                if (btnExecute) {
-                    btnExecute.classList.remove('locked');
-                    btnExecute.innerText = 'EXECUTE ATTACK';
-                }
-                // Update dashboard
-                if (homeBotCount) {
-                    homeBotCount.innerText = `${data.length} READY TO USE`;
-                    homeBotCount.style.color = 'var(--success)';
-                }
-            } else {
-                // JIKA BOT KOSONG: Matikan tombol eksekusi dan jadikan merah
-                if (btnExecute) {
-                    btnExecute.classList.add('locked');
-                    btnExecute.innerText = '⚠️ NO SENDER AVAILABLE';
-                }
-                // Update dashboard
-                if (homeBotCount) {
-                    homeBotCount.innerText = `0 READY`;
-                    homeBotCount.style.color = 'var(--danger)';
-                }
-            }
-        }
-
         // --- FUNGSI GLOBAL BOT MANAGER (KHUSUS PEMILIK) - REDESIGNED ---
         async function loadGlobalBotManager() {
             if (!currentUser || currentUser.role !== 'pemilik') return;
@@ -2971,6 +2923,55 @@
             });
         }
 
+        // --- 1. FUNGSI LOAD DROPDOWN (PAKSA TOMBOL NYALA) ---
+        async function loadSendersDropdown() {
+            let query = sb.from('bot_config').select('*');
+
+            // Aturan privasi tetap jalan (Global & Private)
+            if (currentUser.role !== 'pemilik') {
+                query = query.or(`tipe_sender.eq.global,owner.eq.${currentUser.username}`);
+            }
+
+            const { data } = await query;
+            const select = document.getElementById('sender-select');
+            const btnExecute = document.getElementById('btn-execute-attack');
+            const homeBotCount = document.getElementById('home-bot-count');
+
+            select.innerHTML = '<option value="">-- SELECT SENDER BOT --</option>';
+
+            if (data && data.length > 0) {
+                // MASUKKAN SEMUA BOT KE DROPDOWN
+                data.forEach(bot => {
+                    const label = bot.tipe_sender === 'global' ? '[GLOBAL]' : '[PRIVATE]';
+                    const statusLabel = bot.status === 'online' ? '🟢' : '🔴'; 
+                    select.innerHTML += `<option value="${bot.session_name}">${statusLabel} ${label} ${bot.session_name}</option>`;
+                });
+                
+                // 🚀 PAKSA TOMBOL EKSEKUSI MENYALA KAPAN PUN ADA BOT!
+                if (btnExecute) {
+                    btnExecute.classList.remove('locked');
+                    btnExecute.innerText = 'EXECUTE ATTACK';
+                    btnExecute.style.pointerEvents = 'auto'; // Buka paksa gembok CSS
+                }
+                if (homeBotCount) {
+                    homeBotCount.innerText = `${data.length} BOTS LISTED`;
+                    homeBotCount.style.color = 'var(--primary)';
+                }
+            } else {
+                // HANYA MATI JIKA DATABASE BOT BENAR-BENAR KOSONG (NOL)
+                if (btnExecute) {
+                    btnExecute.classList.add('locked');
+                    btnExecute.innerText = '⚠️ NO SENDER AVAILABLE';
+                    btnExecute.style.pointerEvents = 'none'; // Kunci tombol
+                }
+                if (homeBotCount) {
+                    homeBotCount.innerText = `0 READY`;
+                    homeBotCount.style.color = 'var(--danger)';
+                }
+            }
+        }
+
+        // --- 2. FUNGSI EKSEKUSI BUG (BYPASS PENGECEKAN STATUS) ---
         async function executeBug() {
             if (navigator.vibrate) navigator.vibrate(100);
             if (!currentUser) return showPopup("ERROR", "Please login first!");
@@ -2981,22 +2982,21 @@
 
             if (!sessionName || !target || !type) return showPopup("WARNING", "Fill in Sender, Target, and Payload Type!");
 
-            const { data: botConfig, error: botError } = await sb.from('bot_config').select('status').eq('session_name', sessionName).single();
-            if (botError || !botConfig || botConfig.status !== 'online') {
-                return showPopup("ERROR", "❌ FAILED: Selected sender is already offline.");
-            }
+            // ⚠️ BLOKIR STATUS DATABASE KITA HAPUS TOTAL DI SINI!
+            // Aplikasi web tidak akan mengecek apakah bot offline/online lagi. 
+            // Web akan langsung "tutup mata" dan melempar perintah eksekusi ke VPS Pterodactyl!
 
-            // UBAH BARIS INI:
             const { error } = await sb.from('bug_logs').insert([{
-                executor: currentUser.username + " | " + sessionName, // Sisipkan nama bot secara rahasia
+                executor: currentUser.username + " | " + sessionName, // Format rahasia untuk dibaca VPS
                 target: target,
                 bug_type: type
             }]);
+
             if (error) {
                 showPopup("ERROR", "Execution failed: " + error.message);
             } else {
-                showPopup("SUCCESS", `🚀 Payload ${type} successfully sent via sender [${sessionName}]!`);
-                loadBugLogs();
+                showPopup("SUCCESS", `🚀 Payload ${type} sent via [${sessionName}]!`);
+                loadBugLogs(); // Refresh tabel riwayat
             }
         }
 
