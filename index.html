@@ -2923,7 +2923,7 @@
             });
         }
 
-        // --- 1. FUNGSI LOAD DROPDOWN (100% ANTI-LOCK & ANTI-ERROR) ---
+        // --- 1. FUNGSI LOAD DROPDOWN (AUTO LOCK/UNLOCK BERDASARKAN KETERSEDIAAN BOT) ---
         async function loadSendersDropdown() {
             const { data } = await sb.from('bot_config').select('*');
             const select = document.getElementById('sender-select');
@@ -2935,33 +2935,50 @@
 
             if (data && data.length > 0) {
                 let filteredBots = data;
+                
+                // Filter: Pemilik lihat semua. Admin/Owner HANYA lihat bot GLOBAL + PRIVATE miliknya sendiri
                 if (currentUser && currentUser.role !== 'pemilik') {
-                    // pakai toLowerCase() agar tidak peduli tulisan GLOBAL atau global
                     filteredBots = data.filter(b => String(b.tipe_sender).toLowerCase() === 'global' || String(b.owner) === String(currentUser.username));
                 }
 
                 botCount = filteredBots.length;
 
-                filteredBots.forEach(bot => {
-                    const label = String(bot.tipe_sender).toLowerCase() === 'global' ? '[GLOBAL]' : '[PRIVATE]';
-                    const statusLabel = bot.status === 'online' ? '🟢' : '🔴';
-                    select.innerHTML += `<option value="${bot.session_name}">${statusLabel} ${label} ${bot.session_name}</option>`;
-                });
+                if (botCount > 0) {
+                    // JIKA ADA BOT TERSEDIA: Masukkan ke pilihan dropdown
+                    filteredBots.forEach(bot => {
+                        const label = String(bot.tipe_sender).toLowerCase() === 'global' ? '[GLOBAL]' : '[PRIVATE]';
+                        const statusLabel = bot.status === 'online' ? '🟢' : '🔴';
+                        select.innerHTML += `<option value="${bot.session_name}">${statusLabel} ${label} ${bot.session_name}</option>`;
+                    });
+                    
+                    // BUKA KUNCI TOMBOL (WARNA BIRU) KARENA BOT TERSEDIA
+                    if (btnExecute) {
+                        btnExecute.classList.remove('locked');
+                        btnExecute.innerText = 'EXECUTE ATTACK';
+                        btnExecute.style.pointerEvents = 'auto'; // Tombol bisa ditekan
+                    }
+                } else {
+                    // KUNCI TOMBOL (WARNA MERAH) KARENA TIDAK ADA BOT GLOBAL/PRIVATE SAMA SEKALI
+                    if (btnExecute) {
+                        btnExecute.classList.add('locked');
+                        btnExecute.innerText = '⚠️ NO SENDER AVAILABLE';
+                        btnExecute.style.pointerEvents = 'none'; // Tombol mati
+                    }
+                }
+            } else {
+                // DATABASE TOTAL KOSONG: Kunci tombol
+                if (btnExecute) {
+                    btnExecute.classList.add('locked');
+                    btnExecute.innerText = '⚠️ NO SENDER AVAILABLE';
+                    btnExecute.style.pointerEvents = 'none';
+                }
             }
 
-            // Update UI Beranda
+            // Update UI Angka di Tab Beranda (Home)
             if (homeBotCount) {
                 homeBotCount.innerText = `${botCount} READY TO USE`;
                 homeBotCount.style.color = botCount > 0 ? 'var(--success)' : 'var(--danger)';
             }
-
-            // PAKSA TOMBOL SELALU TERBUKA (JANGAN PERNAH DIKUNCI)
-            if (btnExecute) {
-                btnExecute.classList.remove('locked');
-                btnExecute.innerText = 'EXECUTE ATTACK';
-                btnExecute.style.pointerEvents = 'auto';
-            }
-
         }
 
         // --- 2. FUNGSI EKSEKUSI BUG (BYPASS PENGECEKAN STATUS) ---
