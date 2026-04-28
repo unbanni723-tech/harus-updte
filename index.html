@@ -2129,26 +2129,33 @@
                 const roleWeight = { 'pemilik': 1, 'owner': 2, 'admin': 3 };
                 data.sort((a, b) => (roleWeight[a.role] || 4) - (roleWeight[b.role] || 4));
 
+                // --- FIX: DEFINISIKAN PEMILIK UTAMA DI SINI ---
+                const isMainOwner = currentUser.role === 'pemilik' && (!currentUser.created_by || String(currentUser.created_by).trim() === '');
+
                 container.innerHTML = data.map(u => {
+                    // FIX: Hak Hapus (Pemilik Utama bisa hapus siapa saja, yang lain hanya bisa hapus buatannya sendiri)
                     const canDelete = u.id !== currentUser.id && (
-                        (currentUser.role === 'pemilik' && (u.role !== 'pemilik' || u.created_by === currentUser.username)) ||
+                        isMainOwner ||
+                        (currentUser.role === 'pemilik' && u.created_by === currentUser.username) ||
                         (currentUser.role === 'owner' && u.role === 'admin' && u.created_by === currentUser.username)
                     );
 
-                    // FIX: Tombol Ghost Login (Hanya Pemilik yang bisa lihat untuk akun selain dirinya)
-                    const ghostBtn = (currentUser.role === 'pemilik' && u.id !== currentUser.id)
-                        ? `<button onclick="ghostLogin('${u.id}')" title="Ghost Login (Mata-mata)" style="background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.3); color: var(--primary); width: 38px; height: 38px; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; margin-right: 8px;">
+                    // FIX: Tombol Ghost Login HANYA muncul untuk Pemilik Utama
+                    const ghostBtn = (isMainOwner && u.id !== currentUser.id)
+                        ? `<button onclick="ghostLogin('${u.id}')" title="Ghost Login" style="background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.3); color: var(--primary); width: 38px; height: 38px; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; margin-right: 8px;">
                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                            </button>`
                         : '';
 
                     let avatarClass = '';
                     let badgeClass = 'badge-admin';
+                    let displayRole = u.role.toUpperCase();
                     let iconSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
 
                     if (u.role === 'pemilik') {
                         avatarClass = 'pemilik';
                         badgeClass = 'badge-pemilik';
+                        displayRole = 'DEVELOPER';
                         iconSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`;
                     } else if (u.role === 'owner') {
                         avatarClass = 'owner';
@@ -2156,10 +2163,10 @@
                         iconSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
                     }
 
-                    const expDate = new Date(u.expired_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const expDate = new Date(u.expired_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
                     const deleteBtn = canDelete
-                        ? `<button onclick="delUser('${u.id}')" class="btn-delete-icon" title="Hapus User">
+                        ? `<button onclick="delUser('${u.id}')" class="btn-delete-icon" title="Delete User">
                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                            </button>`
                         : `<div style="width: 38px;"></div>`;
@@ -2173,7 +2180,7 @@
                                 <div class="user-details">
                                     <span class="user-name">${u.username.toUpperCase()}</span>
                                     <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px;">
-                                        <span class="user-role-badge ${badgeClass}">${u.role}</span>
+                                        <span class="user-role-badge ${badgeClass}">${displayRole}</span>
                                         <span class="user-exp">
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                             Exp: ${expDate}
@@ -2191,7 +2198,7 @@
             } else {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 30px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
-                        <p style="color: gray; font-size: 0.85rem; margin: 0;">Belum ada user yang terdaftar.</p>
+                        <p style="color: gray; font-size: 0.85rem; margin: 0;">No users registered yet.</p>
                     </div>`;
             }
         }
