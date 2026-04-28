@@ -2512,7 +2512,6 @@
 
             const { data } = await query;
             const select = document.getElementById('sender-select');
-            select.innerHTML = '<option value="">-- PILIH SENDER BOT --</option>';
 
             if (data) {
                 data.forEach(bot => {
